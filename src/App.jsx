@@ -37,8 +37,8 @@ export default function App() {
         guests: String(form.guests),
       });
 
-      await fetch(
-  `https://script.google.com/macros/s/AKfycbwHmsRoPghrByk9E5w4yro_msuV5gw3-p7ys4FvXPUDNPh_XyNOH4b0GPTGYh3-WbWPxg/exec
+     await fetch(
+  `https://script.google.com/macros/s/AKfycbwHmsRoPghrByk9E5w4yro_msuV5gw3-p7ys4FvXPUDNPh_XyNOH4b0GPTGYh3-WbWPxg/exec?${params.toString()}`,
   {
     method: "GET",
   }
