@@ -38,7 +38,7 @@ export default function App() {
       });
 
       await fetch(
-  `https://script.google.com/macros/s/AKfycbxTJTUdo6CRCFwE70eJxnb1tVBtAp0O-0qX4SkIYXzDmfQvIPuEeaOc1MytCFQob-NC/exec?${params.toString()}`,
+  `https://script.google.com/macros/s/AKfycbwHmsRoPghrByk9E5w4yro_msuV5gw3-p7ys4FvXPUDNPh_XyNOH4b0GPTGYh3-WbWPxg/exec
   {
     method: "GET",
   }
