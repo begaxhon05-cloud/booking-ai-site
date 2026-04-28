@@ -7,13 +7,17 @@ export default function App() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    checkin: "",
-    nights: 1,
-    guests: 1,
-  });
+const [form, setForm] = useState({
+  name: "",
+  email: "",
+  checkin: "",
+  nights: 1,
+  guests: 1,
+});
+
+const pricePerNight = 50;
+const serviceFee = 10;
+const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
 
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbwHmsRoPghrByk9E5w4yro_msuV5gw3-p7ys4FvXPUDNPh_XyNOH4b0GPTGYh3-WbWPxg/exec";
@@ -310,27 +314,55 @@ export default function App() {
                   </div>
 
                   <div className="bg-slate-100 rounded-2xl p-5 space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Name</span>
-                      <span className="font-semibold">{form.name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Email</span>
-                      <span className="font-semibold">{form.email}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Check-in</span>
-                      <span className="font-semibold">{form.checkin}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Nights</span>
-                      <span className="font-semibold">{form.nights}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Guests</span>
-                      <span className="font-semibold">{form.guests}</span>
-                    </div>
-                  </div>
+
+  <div className="flex justify-between">
+    <span className="text-slate-500">Name</span>
+    <span className="font-semibold">{form.name}</span>
+  </div>
+
+  <div className="flex justify-between">
+    <span className="text-slate-500">Email</span>
+    <span className="font-semibold">{form.email}</span>
+  </div>
+
+  <div className="flex justify-between">
+    <span className="text-slate-500">Check-in</span>
+    <span className="font-semibold">{form.checkin}</span>
+  </div>
+
+  <div className="flex justify-between">
+    <span className="text-slate-500">Nights</span>
+    <span className="font-semibold">{form.nights}</span>
+  </div>
+
+  <div className="flex justify-between">
+    <span className="text-slate-500">Guests</span>
+    <span className="font-semibold">{form.guests}</span>
+  </div>
+
+  {/* PRICE SECTION */}
+  <div className="border-t border-slate-300 pt-3 mt-3">
+    <div className="flex justify-between">
+      <span className="text-slate-500">
+        €{pricePerNight} x {form.nights} nights
+      </span>
+      <span className="font-semibold">
+        €{Number(form.nights) * pricePerNight}
+      </span>
+    </div>
+
+    <div className="flex justify-between mt-2">
+      <span className="text-slate-500">Service fee</span>
+      <span className="font-semibold">€{serviceFee}</span>
+    </div>
+
+    <div className="flex justify-between mt-3 text-lg">
+      <span className="font-bold">Total</span>
+      <span className="font-bold text-green-600">€{totalPrice}</span>
+    </div>
+  </div>
+
+</div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <button
