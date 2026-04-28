@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import emailjs from "@emailjs/browser";
 import "./App.css";
 
@@ -6,6 +6,7 @@ export default function App() {
   const [step, setStep] = useState(1);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [bookedDates, setBookedDates] = useState([]);
 
   const [form, setForm] = useState({
     name: "",
@@ -22,6 +23,13 @@ export default function App() {
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbwHmsRoPghrByk9E5w4yro_msuV5gw3-p7ys4FvXPUDNPh_XyNOH4b0GPTGYh3-WbWPxg/exec";
 
+  useEffect(() => {
+    fetch(`${GOOGLE_SCRIPT_URL}?action=getBookedDates`)
+      .then((res) => res.json())
+      .then((data) => setBookedDates(data))
+      .catch((error) => console.error("Booked dates error:", error));
+  }, []);
+
   const onChange = (e) => {
     setForm({
       ...form,
@@ -29,7 +37,15 @@ export default function App() {
     });
   };
 
-  const next = () => setStep((prev) => prev + 1);
+  const next = () => {
+    if (step === 1 && bookedDates.includes(form.checkin)) {
+      alert("This date is already booked. Please choose another date.");
+      return;
+    }
+
+    setStep((prev) => prev + 1);
+  };
+
   const back = () => setStep((prev) => prev - 1);
 
   const resetForm = () => {
@@ -46,6 +62,13 @@ export default function App() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+
+    if (bookedDates.includes(form.checkin)) {
+      alert("This date is already booked. Please choose another date.");
+      setStep(1);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -171,9 +194,16 @@ export default function App() {
                       name="checkin"
                       value={form.checkin}
                       onChange={onChange}
+                      min={new Date().toISOString().split("T")[0]}
                       required
                       className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
+
+                    {form.checkin && bookedDates.includes(form.checkin) && (
+                      <p className="text-red-500 text-sm mt-2 font-semibold">
+                        This date is already booked. Please choose another date.
+                      </p>
+                    )}
                   </div>
 
                   <div>
