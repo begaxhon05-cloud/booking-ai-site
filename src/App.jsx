@@ -7,17 +7,17 @@ export default function App() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
-const [form, setForm] = useState({
-  name: "",
-  email: "",
-  checkin: "",
-  nights: 1,
-  guests: 1,
-});
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    checkin: "",
+    nights: 1,
+    guests: 1,
+  });
 
-const pricePerNight = 50;
-const serviceFee = 10;
-const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
+  const pricePerNight = 50;
+  const serviceFee = 10;
+  const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
 
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbwHmsRoPghrByk9E5w4yro_msuV5gw3-p7ys4FvXPUDNPh_XyNOH4b0GPTGYh3-WbWPxg/exec";
@@ -29,12 +29,19 @@ const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
     });
   };
 
-  const next = () => {
-    setStep((prev) => prev + 1);
-  };
+  const next = () => setStep((prev) => prev + 1);
+  const back = () => setStep((prev) => prev - 1);
 
-  const back = () => {
-    setStep((prev) => prev - 1);
+  const resetForm = () => {
+    setSent(false);
+    setStep(1);
+    setForm({
+      name: "",
+      email: "",
+      checkin: "",
+      nights: 1,
+      guests: 1,
+    });
   };
 
   const onSubmit = async (e) => {
@@ -74,25 +81,15 @@ const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
     return (
       <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white/10 border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
-          <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-green-500 flex items-center justify-center text-3xl">
+          <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-green-500 flex items-center justify-center text-3xl font-bold">
             ✓
           </div>
           <h1 className="text-3xl font-bold mb-3">Booking Sent</h1>
           <p className="text-slate-300 mb-6">
-            Your request was sent successfully. We will contact you shortly.
+            Your booking request was sent successfully.
           </p>
           <button
-            onClick={() => {
-              setSent(false);
-              setStep(1);
-              setForm({
-                name: "",
-                email: "",
-                checkin: "",
-                nights: 1,
-                guests: 1,
-              });
-            }}
+            onClick={resetForm}
             className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-2xl transition"
           >
             New Booking
@@ -110,9 +107,11 @@ const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
             <p className="text-green-400 font-semibold mb-3">
               AI Booking System
             </p>
+
             <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-5">
               Book your stay in a smarter way.
             </h1>
+
             <p className="text-slate-300 text-lg mb-8">
               Send booking requests instantly with email, Google Sheets and
               WhatsApp automation.
@@ -123,10 +122,12 @@ const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
                 <p className="text-2xl font-bold">24/7</p>
                 <p className="text-sm text-slate-400">Requests</p>
               </div>
+
               <div className="bg-white/10 rounded-2xl p-4">
                 <p className="text-2xl font-bold">AI</p>
                 <p className="text-sm text-slate-400">Ready</p>
               </div>
+
               <div className="bg-white/10 rounded-2xl p-4">
                 <p className="text-2xl font-bold">Fast</p>
                 <p className="text-sm text-slate-400">Response</p>
@@ -233,6 +234,7 @@ const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
                     >
                       Back
                     </button>
+
                     <button
                       type="button"
                       onClick={next}
@@ -292,6 +294,7 @@ const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
                     >
                       Back
                     </button>
+
                     <button
                       type="button"
                       onClick={next}
@@ -305,80 +308,83 @@ const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
               )}
 
               {step === 4 && (
-  <div className="space-y-5">
-    <div>
-      <h3 className="text-xl font-bold mb-1">Confirm Booking</h3>
-      <p className="text-slate-500 mb-5">
-        Review your booking request before sending.
-      </p>
-    </div>
+                <div className="space-y-5">
+                  <div>
+                    <h3 className="text-xl font-bold mb-1">Confirm Booking</h3>
+                    <p className="text-slate-500 mb-5">
+                      Review your booking request before sending.
+                    </p>
+                  </div>
 
-   <div className="bg-slate-100 rounded-2xl p-5 space-y-3">
-  <div className="flex justify-between">
-    <span className="text-slate-500">Name</span>
-    <span className="font-semibold">{form.name}</span>
-  </div>
+                  <div className="bg-slate-100 rounded-2xl p-5 space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Name</span>
+                      <span className="font-semibold">{form.name}</span>
+                    </div>
 
-  <div className="flex justify-between">
-    <span className="text-slate-500">Email</span>
-    <span className="font-semibold">{form.email}</span>
-  </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Email</span>
+                      <span className="font-semibold">{form.email}</span>
+                    </div>
 
-  <div className="flex justify-between">
-    <span className="text-slate-500">Check-in</span>
-    <span className="font-semibold">{form.checkin}</span>
-  </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Check-in</span>
+                      <span className="font-semibold">{form.checkin}</span>
+                    </div>
 
-  <div className="flex justify-between">
-    <span className="text-slate-500">Nights</span>
-    <span className="font-semibold">{form.nights}</span>
-  </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Nights</span>
+                      <span className="font-semibold">{form.nights}</span>
+                    </div>
 
-  <div className="flex justify-between">
-    <span className="text-slate-500">Guests</span>
-    <span className="font-semibold">{form.guests}</span>
-  </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Guests</span>
+                      <span className="font-semibold">{form.guests}</span>
+                    </div>
 
-  <div className="border-t border-slate-300 pt-3 mt-3">
-    <div className="flex justify-between">
-      <span className="text-slate-500">
-        €{pricePerNight} x {form.nights} nights
-      </span>
-      <span className="font-semibold">
-        €{Number(form.nights) * pricePerNight}
-      </span>
-    </div>
+                    <div className="border-t border-slate-300 pt-3 mt-3">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">
+                          €{pricePerNight} x {form.nights} nights
+                        </span>
+                        <span className="font-semibold">
+                          €{Number(form.nights) * pricePerNight}
+                        </span>
+                      </div>
 
-    <div className="flex justify-between mt-2">
-      <span className="text-slate-500">Service fee</span>
-      <span className="font-semibold">€{serviceFee}</span>
-    </div>
+                      <div className="flex justify-between mt-2">
+                        <span className="text-slate-500">Service fee</span>
+                        <span className="font-semibold">€{serviceFee}</span>
+                      </div>
 
-    <div className="flex justify-between mt-3 text-lg">
-      <span className="font-bold">Total</span>
-      <span className="font-bold text-green-600">€{totalPrice}</span>
-    </div>
-  </div>
-</div>
+                      <div className="flex justify-between mt-3 text-lg">
+                        <span className="font-bold">Total</span>
+                        <span className="font-bold text-green-600">
+                          €{totalPrice}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
-    <div className="grid grid-cols-2 gap-3">
-      <button
-        type="button"
-        onClick={back}
-        className="w-full border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
-      >
-        Back
-      </button>
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white font-semibold py-3 rounded-2xl transition"
-      >
-        {loading ? "Sending..." : "Confirm"}
-      </button>
-    </div>
-  </div>
-)}
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={back}
+                      className="w-full border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
+                    >
+                      Back
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white font-semibold py-3 rounded-2xl transition"
+                    >
+                      {loading ? "Sending..." : "Confirm"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </form>
           </div>
         </div>
