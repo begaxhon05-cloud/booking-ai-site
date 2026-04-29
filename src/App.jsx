@@ -6,7 +6,15 @@ export default function App() {
   const [step, setStep] = useState(1);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [bookedDates, setBookedDates] = useState([]);
+  const [bookedDates, setBookedDates] = useState({});
+
+  const rooms = [
+    "Room 101",
+    "Room 102",
+    "Room 103",
+    "Family Room",
+    "Sea View Apartment",
+  ];
 
   const [form, setForm] = useState({
     name: "",
@@ -14,6 +22,7 @@ export default function App() {
     checkin: "",
     nights: 1,
     guests: 1,
+    room: "Room 101",
   });
 
   const pricePerNight = 50;
@@ -30,6 +39,9 @@ export default function App() {
       .catch((error) => console.error("Booked dates error:", error));
   }, []);
 
+  const selectedRoomBookedDates = bookedDates[form.room] || [];
+  const isRoomBooked = selectedRoomBookedDates.includes(form.checkin);
+
   const onChange = (e) => {
     setForm({
       ...form,
@@ -38,8 +50,8 @@ export default function App() {
   };
 
   const next = () => {
-    if (step === 1 && bookedDates.includes(form.checkin)) {
-      alert("This date is already booked. Please choose another date.");
+    if (step === 1 && isRoomBooked) {
+      alert("This room is already booked for this date. Please choose another room or date.");
       return;
     }
 
@@ -57,14 +69,15 @@ export default function App() {
       checkin: "",
       nights: 1,
       guests: 1,
+      room: "Room 101",
     });
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (bookedDates.includes(form.checkin)) {
-      alert("This date is already booked. Please choose another date.");
+    if (isRoomBooked) {
+      alert("This room is already booked for this date. Please choose another room or date.");
       setStep(1);
       return;
     }
@@ -85,6 +98,7 @@ export default function App() {
         checkin: form.checkin,
         nights: String(form.nights),
         guests: String(form.guests),
+        room: form.room,
       });
 
       await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, {
@@ -181,8 +195,27 @@ export default function App() {
                   <div>
                     <h3 className="text-xl font-bold mb-1">Select Dates</h3>
                     <p className="text-slate-500 mb-5">
-                      Choose your check-in date and number of nights.
+                      Choose your room, check-in date and number of nights.
                     </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">
+                      Room
+                    </label>
+                    <select
+                      name="room"
+                      value={form.room}
+                      onChange={onChange}
+                      required
+                      className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                      {rooms.map((room) => (
+                        <option key={room} value={room}>
+                          {room}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
@@ -199,9 +232,9 @@ export default function App() {
                       className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
 
-                    {form.checkin && bookedDates.includes(form.checkin) && (
+                    {form.checkin && isRoomBooked && (
                       <p className="text-red-500 text-sm mt-2 font-semibold">
-                        This date is already booked. Please choose another date.
+                        This room is already booked for this date. Choose another room or date.
                       </p>
                     )}
                   </div>
@@ -355,6 +388,11 @@ export default function App() {
                     <div className="flex justify-between">
                       <span className="text-slate-500">Email</span>
                       <span className="font-semibold">{form.email}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Room</span>
+                      <span className="font-semibold">{form.room}</span>
                     </div>
 
                     <div className="flex justify-between">
