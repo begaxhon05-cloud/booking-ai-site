@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
 import emailjs from "@emailjs/browser";
 import "./App.css";
+import { propertyInfo } from "./propertyInfo";
 
 export default function App() {
   const [step, setStep] = useState(1);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bookedDates, setBookedDates] = useState({});
+
+  const [chatOpen, setChatOpen] = useState(false);
+  const [question, setQuestion] = useState("");
+  const [messages, setMessages] = useState([
+    {
+      from: "bot",
+      text: `Hi! I am the AI assistant for ${propertyInfo.name}. Ask me about location, check-in, Wi-Fi, parking, rooms or rules.`,
+    },
+  ]);
 
   const rooms = [
     "Room 101",
@@ -42,6 +52,32 @@ export default function App() {
   const selectedRoomBookedDates = bookedDates[form.room] || [];
   const isRoomBooked = selectedRoomBookedDates.includes(form.checkin);
 
+  const getAIAnswer = (text) => {
+    const q = text.toLowerCase();
+
+    const match = propertyInfo.faq.find((item) =>
+      item.keywords.some((keyword) => q.includes(keyword.toLowerCase()))
+    );
+
+    if (match) return match.answer;
+
+    if (q.includes("room") || q.includes("dhom")) {
+      return `Available room types: ${propertyInfo.rooms.join(", ")}.`;
+    }
+
+    return "I can help with location, check-in, check-out, Wi-Fi, parking, beach distance, rooms, payment and house rules.";
+  };
+
+  const sendMessage = () => {
+    if (!question.trim()) return;
+
+    const userMessage = { from: "user", text: question };
+    const botMessage = { from: "bot", text: getAIAnswer(question) };
+
+    setMessages((prev) => [...prev, userMessage, botMessage]);
+    setQuestion("");
+  };
+
   const onChange = (e) => {
     setForm({
       ...form,
@@ -51,7 +87,9 @@ export default function App() {
 
   const next = () => {
     if (step === 1 && isRoomBooked) {
-      alert("This room is already booked for this date. Please choose another room or date.");
+      alert(
+        "This room is already booked for this date. Please choose another room or date."
+      );
       return;
     }
 
@@ -77,7 +115,9 @@ export default function App() {
     e.preventDefault();
 
     if (isRoomBooked) {
-      alert("This room is already booked for this date. Please choose another room or date.");
+      alert(
+        "This room is already booked for this date. Please choose another room or date."
+      );
       setStep(1);
       return;
     }
@@ -150,8 +190,8 @@ export default function App() {
             </h1>
 
             <p className="text-slate-300 text-lg mb-8">
-              Send booking requests instantly with email, Google Sheets and
-              WhatsApp automation.
+              Send booking requests instantly with email, Google Sheets,
+              WhatsApp automation and AI assistance.
             </p>
 
             <div className="grid grid-cols-3 gap-3 text-center">
@@ -162,7 +202,7 @@ export default function App() {
 
               <div className="bg-white/10 rounded-2xl p-4">
                 <p className="text-2xl font-bold">AI</p>
-                <p className="text-sm text-slate-400">Ready</p>
+                <p className="text-sm text-slate-400">Assistant</p>
               </div>
 
               <div className="bg-white/10 rounded-2xl p-4">
@@ -234,7 +274,8 @@ export default function App() {
 
                     {form.checkin && isRoomBooked && (
                       <p className="text-red-500 text-sm mt-2 font-semibold">
-                        This room is already booked for this date. Choose another room or date.
+                        This room is already booked for this date. Choose another
+                        room or date.
                       </p>
                     )}
                   </div>
@@ -457,6 +498,61 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      {/* AI CHAT WIDGET */}
+      <div className="fixed bottom-5 right-5 z-50">
+        {chatOpen && (
+          <div className="mb-4 w-[320px] rounded-3xl bg-white text-slate-900 shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="bg-slate-900 text-white px-5 py-4">
+              <h3 className="font-bold">AI Assistant</h3>
+              <p className="text-xs text-slate-300">{propertyInfo.name}</p>
+            </div>
+
+            <div className="h-80 overflow-y-auto p-4 space-y-3 bg-slate-50">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
+                    msg.from === "user"
+                      ? "ml-auto bg-green-500 text-white"
+                      : "bg-white border border-slate-200 text-slate-800"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              ))}
+            </div>
+
+            <div className="p-3 border-t border-slate-200 flex gap-2">
+              <input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") sendMessage();
+                }}
+                placeholder="Ask something..."
+                className="flex-1 border border-slate-300 rounded-2xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500"
+              />
+
+              <button
+                type="button"
+                onClick={sendMessage}
+                className="bg-green-500 hover:bg-green-600 text-white rounded-2xl px-4 text-sm font-semibold"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setChatOpen(!chatOpen)}
+          className="h-14 w-14 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-2xl text-2xl flex items-center justify-center"
+        >
+          {chatOpen ? "×" : "💬"}
+        </button>
+      </div>
     </div>
   );
 }
