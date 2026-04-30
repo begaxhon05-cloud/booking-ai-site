@@ -3,42 +3,26 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { message } = req.body;
-
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const { message } = req.body;
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ reply: "OPENAI_API_KEY is missing in Vercel." });
+    }
+
+    const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        messages: [
+        input: [
           {
             role: "system",
-            content: `
-You are a professional hotel assistant.
-
-You speak:
-- Albanian
-- English
-- Italian
-- German
-- Spanish
-
-Always reply in the SAME language as the user.
-
-Be friendly and helpful.
-
-Hotel Info:
-Location: Tirana center
-Check-in: 14:00
-Check-out: 11:00
-WiFi: Yes
-Parking: Yes
-Rooms: Standard, Deluxe
-            `,
+            content:
+              "You are a professional hotel AI receptionist. Reply in the same language as the user: Albanian, English, Italian, German or Spanish. Be friendly, helpful and concise. Property: Villa Aurora Demo, Saranda Albania. Check-in 14:00, check-out 10:00, WiFi yes, parking yes, rooms: Room 101, Room 102, Room 103, Family Room, Sea View Apartment.",
           },
           {
             role: "user",
@@ -50,11 +34,18 @@ Rooms: Standard, Deluxe
 
     const data = await response.json();
 
-    res.status(200).json({
-      reply: data.choices[0].message.content,
-    });
+    if (!response.ok) {
+      return res.status(200).json({
+        reply: `AI API error: ${data.error?.message || "Unknown error"}`,
+      });
+    }
 
+    return res.status(200).json({
+      reply: data.output_text || "I could not generate a response.",
+    });
   } catch (error) {
-    res.status(500).json({ error: "AI error" });
+    return res.status(200).json({
+      reply: `AI error: ${error.message}`,
+    });
   }
 }
