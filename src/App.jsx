@@ -14,7 +14,7 @@ export default function App() {
   const [messages, setMessages] = useState([
     {
       from: "bot",
-      text: `Hi! I am the AI assistant for ${propertyInfo.name}. Ask me about location, check-in, Wi-Fi, parking, rooms or rules.`,
+      text: `Hi! I am the AI assistant for ${propertyInfo.name}. Ask me anything about the property, booking, location, rooms or services.`,
     },
   ]);
 
@@ -52,30 +52,42 @@ export default function App() {
   const selectedRoomBookedDates = bookedDates[form.room] || [];
   const isRoomBooked = selectedRoomBookedDates.includes(form.checkin);
 
-  const getAIAnswer = (text) => {
-    const q = text.toLowerCase();
-
-    const match = propertyInfo.faq.find((item) =>
-      item.keywords.some((keyword) => q.includes(keyword.toLowerCase()))
-    );
-
-    if (match) return match.answer;
-
-    if (q.includes("room") || q.includes("dhom")) {
-      return `Available room types: ${propertyInfo.rooms.join(", ")}.`;
-    }
-
-    return "I can help with location, check-in, check-out, Wi-Fi, parking, beach distance, rooms, payment and house rules.";
-  };
-
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!question.trim()) return;
 
-    const userMessage = { from: "user", text: question };
-    const botMessage = { from: "bot", text: getAIAnswer(question) };
+    const userQuestion = question;
+    const userMsg = { from: "user", text: userQuestion };
 
-    setMessages((prev) => [...prev, userMessage, botMessage]);
+    setMessages((prev) => [...prev, userMsg]);
     setQuestion("");
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: userQuestion }),
+      });
+
+      const data = await res.json();
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "bot",
+          text: data.reply || "I could not generate a response.",
+        },
+      ]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "bot",
+          text: "AI error. Please try again.",
+        },
+      ]);
+    }
   };
 
   const onChange = (e) => {
