@@ -1,17 +1,15 @@
 export default async function handler(req, res) {
-  try {
-    const { message } = req.body;
+  if (req.method !== "POST") {
+    return res.status(405).json({ reply: "Method not allowed" });
+  }
 
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({
-        reply: "OPENAI_API_KEY missing"
-      });
-    }
+  try {
+    const { messages } = req.body;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -20,31 +18,55 @@ export default async function handler(req, res) {
           {
             role: "system",
             content: `
-You are a professional hotel assistant.
-Answer in the same language as the user (Albanian, English, Italian, German, Spanish).
-Be friendly and helpful.
+You are a professional AI receptionist for Villa Aurora Demo.
+
+Reply in the same language as the user:
+Albanian, English, Italian, German, Spanish.
+
+You help with:
+- greetings
+- location
+- rooms
+- prices
+- parking
+- WiFi
+- booking questions
+- check-in/check-out
+- general hotel questions
+
+Be friendly, short and clear.
+
+Property info:
+Name: Villa Aurora Demo
+Location: Saranda, Albania
+Address: Rruga Butrinti, Saranda
+Check-in: 14:00
+Check-out: 10:00
+WiFi: yes
+Parking: yes
+Rooms: Room 101, Room 102, Room 103, Family Room, Sea View Apartment
+Price: €50 per night + €10 service fee
             `,
           },
-          { role: "user", content: message },
+          ...messages,
         ],
       }),
     });
 
     const data = await response.json();
 
-    console.log("OPENAI RESPONSE:", data);
+    if (!response.ok) {
+      return res.status(200).json({
+        reply: `AI API error: ${data.error?.message || "Unknown error"}`,
+      });
+    }
 
-    const reply =
-      data.choices?.[0]?.message?.content ||
-      "AI could not respond.";
-
-    res.status(200).json({ reply });
-
+    return res.status(200).json({
+      reply: data.choices?.[0]?.message?.content || "I could not generate a response.",
+    });
   } catch (error) {
-    console.error("ERROR:", error);
-
-    res.status(500).json({
-      reply: "Server error. Check logs."
+    return res.status(200).json({
+      reply: "AI server error. Please try again.",
     });
   }
 }

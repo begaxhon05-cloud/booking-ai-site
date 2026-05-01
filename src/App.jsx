@@ -11,6 +11,8 @@ export default function App() {
 
   const [chatOpen, setChatOpen] = useState(false);
   const [question, setQuestion] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+
   const [messages, setMessages] = useState([
     {
       from: "bot",
@@ -53,21 +55,33 @@ export default function App() {
   const isRoomBooked = selectedRoomBookedDates.includes(form.checkin);
 
   const sendMessage = async () => {
-    if (!question.trim()) return;
+    if (!question.trim() || chatLoading) return;
 
     const userQuestion = question;
-    const userMsg = { from: "user", text: userQuestion };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const userMsg = {
+      from: "user",
+      text: userQuestion,
+    };
+
+    const updatedMessages = [...messages, userMsg];
+
+    setMessages(updatedMessages);
     setQuestion("");
+    setChatLoading(true);
 
     try {
+      const aiMessages = updatedMessages.map((msg) => ({
+        role: msg.from === "user" ? "user" : "assistant",
+        content: msg.text,
+      }));
+
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: userQuestion }),
+        body: JSON.stringify({ messages: aiMessages }),
       });
 
       const data = await res.json();
@@ -87,6 +101,8 @@ export default function App() {
           text: "AI error. Please try again.",
         },
       ]);
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -511,7 +527,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* AI CHAT WIDGET */}
       <div className="fixed bottom-5 right-5 z-50">
         {chatOpen && (
           <div className="mb-4 w-[320px] rounded-3xl bg-white text-slate-900 shadow-2xl border border-slate-200 overflow-hidden">
@@ -533,25 +548,33 @@ export default function App() {
                   {msg.text}
                 </div>
               ))}
+
+              {chatLoading && (
+                <div className="max-w-[85%] rounded-2xl px-4 py-2 text-sm bg-white border border-slate-200 text-slate-800">
+                  Typing...
+                </div>
+              )}
             </div>
 
             <div className="p-3 border-t border-slate-200 flex gap-2">
               <input
                 value={question}
+                disabled={chatLoading}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") sendMessage();
                 }}
                 placeholder="Ask something..."
-                className="flex-1 border border-slate-300 rounded-2xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500"
+                className="flex-1 border border-slate-300 rounded-2xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500 disabled:bg-slate-100"
               />
 
               <button
                 type="button"
+                disabled={chatLoading}
                 onClick={sendMessage}
-                className="bg-green-500 hover:bg-green-600 text-white rounded-2xl px-4 text-sm font-semibold"
+                className="bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white rounded-2xl px-4 text-sm font-semibold"
               >
-                Send
+                {chatLoading ? "..." : "Send"}
               </button>
             </div>
           </div>
