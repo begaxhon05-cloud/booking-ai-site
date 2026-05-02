@@ -14,6 +14,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
+        response_format: { type: "json_object" },
         messages: [
           {
             role: "system",
@@ -23,18 +24,19 @@ You are a professional AI receptionist for Villa Aurora Demo.
 Reply in the same language as the user:
 Albanian, English, Italian, German, Spanish.
 
-You help with:
-- greetings
-- location
-- rooms
-- prices
-- parking
-- WiFi
-- booking questions
-- check-in/check-out
-- general hotel questions
+Your job:
+1. Answer normal questions about the property.
+2. Help the guest create a booking.
+3. Collect missing booking details:
+- room
+- checkin date in YYYY-MM-DD format
+- nights
+- guests
+- name
+- email
 
-Be friendly, short and clear.
+Available rooms:
+Room 101, Room 102, Room 103, Family Room, Sea View Apartment
 
 Property info:
 Name: Villa Aurora Demo
@@ -44,8 +46,34 @@ Check-in: 14:00
 Check-out: 10:00
 WiFi: yes
 Parking: yes
-Rooms: Room 101, Room 102, Room 103, Family Room, Sea View Apartment
 Price: €50 per night + €10 service fee
+
+Current year: 2026.
+
+Always return ONLY valid JSON in this format:
+
+{
+  "reply": "message to user",
+  "bookingReady": false,
+  "booking": null
+}
+
+If all booking details are collected, return:
+
+{
+  "reply": "Here is your booking summary. Please confirm if everything is correct.",
+  "bookingReady": true,
+  "booking": {
+    "room": "Room 101",
+    "checkin": "2026-05-10",
+    "nights": 2,
+    "guests": 2,
+    "name": "Guest Name",
+    "email": "guest@email.com"
+  }
+}
+
+Never finalize a booking yourself. The user must click Confirm Booking.
             `,
           },
           ...messages,
@@ -58,15 +86,33 @@ Price: €50 per night + €10 service fee
     if (!response.ok) {
       return res.status(200).json({
         reply: `AI API error: ${data.error?.message || "Unknown error"}`,
+        bookingReady: false,
+        booking: null,
       });
     }
 
-    return res.status(200).json({
-      reply: data.choices?.[0]?.message?.content || "I could not generate a response.",
-    });
+    const content = data.choices?.[0]?.message?.content;
+
+    try {
+      const parsed = JSON.parse(content);
+
+      return res.status(200).json({
+        reply: parsed.reply || "I could not generate a response.",
+        bookingReady: Boolean(parsed.bookingReady),
+        booking: parsed.booking || null,
+      });
+    } catch {
+      return res.status(200).json({
+        reply: content || "I could not generate a response.",
+        bookingReady: false,
+        booking: null,
+      });
+    }
   } catch (error) {
     return res.status(200).json({
       reply: "AI server error. Please try again.",
+      bookingReady: false,
+      booking: null,
     });
   }
 }

@@ -12,11 +12,12 @@ export default function App() {
   const [chatOpen, setChatOpen] = useState(false);
   const [question, setQuestion] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState(null);
 
   const [messages, setMessages] = useState([
     {
       from: "bot",
-      text: `Hi! I am the AI assistant for ${propertyInfo.name}. Ask me anything about the property, booking, location, rooms or services.`,
+      text: `Hi! I am the AI assistant for ${propertyInfo.name}. Ask me anything or tell me your booking request.`,
     },
   ]);
 
@@ -39,7 +40,9 @@ export default function App() {
 
   const pricePerNight = 50;
   const serviceFee = 10;
-  const totalPrice = Number(form.nights) * pricePerNight + serviceFee;
+
+  const calculateTotal = (nights) => Number(nights) * pricePerNight + serviceFee;
+  const totalPrice = calculateTotal(form.nights);
 
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbwHmsRoPghrByk9E5w4yro_msuV5gw3-p7ys4FvXPUDNPh_XyNOH4b0GPTGYh3-WbWPxg/exec";
@@ -54,21 +57,61 @@ export default function App() {
   const selectedRoomBookedDates = bookedDates[form.room] || [];
   const isRoomBooked = selectedRoomBookedDates.includes(form.checkin);
 
+  const isBookingUnavailable = (booking) => {
+    if (!booking?.room || !booking?.checkin) return false;
+    return bookedDates[booking.room]?.includes(booking.checkin);
+  };
+
+  const submitBooking = async (bookingData) => {
+    if (isBookingUnavailable(bookingData)) {
+      alert("This room is already booked for this date.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await emailjs.send(
+        "service.booking",
+        "template_vt1z08k",
+        bookingData,
+        "ezj-MNGM2H6cjtxg5"
+      );
+
+      const params = new URLSearchParams({
+        name: bookingData.name,
+        email: bookingData.email,
+        checkin: bookingData.checkin,
+        nights: String(bookingData.nights),
+        guests: String(bookingData.guests),
+        room: bookingData.room,
+      });
+
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, {
+        method: "GET",
+      });
+
+      setPendingBooking(null);
+      setSent(true);
+    } catch (error) {
+      console.error("Booking error:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const sendMessage = async () => {
     if (!question.trim() || chatLoading) return;
 
     const userQuestion = question;
-
-    const userMsg = {
-      from: "user",
-      text: userQuestion,
-    };
-
+    const userMsg = { from: "user", text: userQuestion };
     const updatedMessages = [...messages, userMsg];
 
     setMessages(updatedMessages);
     setQuestion("");
     setChatLoading(true);
+    setPendingBooking(null);
 
     try {
       const aiMessages = updatedMessages.map((msg) => ({
@@ -93,13 +136,14 @@ export default function App() {
           text: data.reply || "I could not generate a response.",
         },
       ]);
+
+      if (data.bookingReady && data.booking) {
+        setPendingBooking(data.booking);
+      }
     } catch (error) {
       setMessages((prev) => [
         ...prev,
-        {
-          from: "bot",
-          text: "AI error. Please try again.",
-        },
+        { from: "bot", text: "AI error. Please try again." },
       ]);
     } finally {
       setChatLoading(false);
@@ -129,6 +173,7 @@ export default function App() {
   const resetForm = () => {
     setSent(false);
     setStep(1);
+    setPendingBooking(null);
     setForm({
       name: "",
       email: "",
@@ -150,36 +195,7 @@ export default function App() {
       return;
     }
 
-    setLoading(true);
-
-    try {
-      await emailjs.send(
-        "service.booking",
-        "template_vt1z08k",
-        form,
-        "ezj-MNGM2H6cjtxg5"
-      );
-
-      const params = new URLSearchParams({
-        name: form.name,
-        email: form.email,
-        checkin: form.checkin,
-        nights: String(form.nights),
-        guests: String(form.guests),
-        room: form.room,
-      });
-
-      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, {
-        method: "GET",
-      });
-
-      setSent(true);
-    } catch (error) {
-      console.error("Booking error:", error);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    await submitBooking(form);
   };
 
   if (sent) {
@@ -529,7 +545,7 @@ export default function App() {
 
       <div className="fixed bottom-5 right-5 z-50">
         {chatOpen && (
-          <div className="mb-4 w-[320px] rounded-3xl bg-white text-slate-900 shadow-2xl border border-slate-200 overflow-hidden">
+          <div className="mb-4 w-[340px] rounded-3xl bg-white text-slate-900 shadow-2xl border border-slate-200 overflow-hidden">
             <div className="bg-slate-900 text-white px-5 py-4">
               <h3 className="font-bold">AI Assistant</h3>
               <p className="text-xs text-slate-300">{propertyInfo.name}</p>
@@ -552,6 +568,36 @@ export default function App() {
               {chatLoading && (
                 <div className="max-w-[85%] rounded-2xl px-4 py-2 text-sm bg-white border border-slate-200 text-slate-800">
                   Typing...
+                </div>
+              )}
+
+              {pendingBooking && (
+                <div className="bg-white border border-green-300 rounded-2xl p-4 text-sm space-y-2">
+                  <p className="font-bold text-green-700">Booking Summary</p>
+                  <p>Room: {pendingBooking.room}</p>
+                  <p>Check-in: {pendingBooking.checkin}</p>
+                  <p>Nights: {pendingBooking.nights}</p>
+                  <p>Guests: {pendingBooking.guests}</p>
+                  <p>Name: {pendingBooking.name}</p>
+                  <p>Email: {pendingBooking.email}</p>
+                  <p className="font-bold">
+                    Total: €{calculateTotal(pendingBooking.nights)}
+                  </p>
+
+                  {isBookingUnavailable(pendingBooking) ? (
+                    <p className="text-red-500 font-semibold">
+                      This room is already booked for this date.
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={() => submitBooking(pendingBooking)}
+                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-xl disabled:bg-green-300"
+                    >
+                      {loading ? "Confirming..." : "Confirm Booking"}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
