@@ -164,8 +164,10 @@ export default function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ messages: aiMessages }),
-      });
+        body: JSON.stringify({
+  messages: aiMessages,
+  availability: bookedDates,
+}),
 
       const data = await res.json();
 
