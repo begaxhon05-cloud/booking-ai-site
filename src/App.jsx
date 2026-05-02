@@ -149,13 +149,58 @@ export default function App() {
   };
 
   return (
+  <div className="min-h-screen bg-slate-950 text-white">
+
+    {/* HERO */}
+    <div className="max-w-6xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-10 items-center">
+
+      <div>
+        <h1 className="text-5xl font-bold mb-6">
+          Book your stay in a smarter way
+        </h1>
+
+        <p className="text-gray-400 text-lg mb-6">
+          AI-powered booking assistant. Fast, smart and automatic.
+        </p>
+
+        <div className="flex gap-4">
+          <div className="bg-gray-800 p-4 rounded-xl text-center">
+            <p className="text-xl font-bold">24/7</p>
+            <p className="text-sm text-gray-400">Requests</p>
+          </div>
+
+          <div className="bg-gray-800 p-4 rounded-xl text-center">
+            <p className="text-xl font-bold">AI</p>
+            <p className="text-sm text-gray-400">Assistant</p>
+          </div>
+
+          <div className="bg-gray-800 p-4 rounded-xl text-center">
+            <p className="text-xl font-bold">Fast</p>
+            <p className="text-sm text-gray-400">Response</p>
+          </div>
+        </div>
+      </div>
+
+      {/* FORM SIMPLIFIED */}
+      <div className="bg-white text-black p-6 rounded-xl shadow-xl">
+        <h2 className="text-xl font-bold mb-4">Quick Booking</h2>
+
+        <p className="text-sm text-gray-600">
+          Use AI assistant (bottom-right) to book automatically.
+        </p>
+      </div>
+    </div>
+
+    {/* CHAT WIDGET */}
     <div className="fixed bottom-5 right-5">
       <div className="w-[350px] bg-white rounded-2xl shadow-xl overflow-hidden">
+
         <div className="bg-black text-white p-4 font-bold">
           AI Assistant
         </div>
 
         <div className="h-80 overflow-y-auto p-3 space-y-2 bg-gray-100">
+
           {messages.map((msg, i) => (
             <div
               key={i}
@@ -207,5 +252,6 @@ export default function App() {
         </div>
       </div>
     </div>
-  );
-}
+
+  </div>
+);
