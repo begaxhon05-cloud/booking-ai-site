@@ -1,6 +1,10 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ reply: "Method not allowed" });
+    return res.status(405).json({
+      reply: "Method not allowed",
+      bookingReady: false,
+      booking: null,
+    });
   }
 
   try {
@@ -19,26 +23,19 @@ export default async function handler(req, res) {
           {
             role: "system",
             content: `
-You are a professional AI receptionist for Villa Aurora Demo.
+You are a professional AI hotel receptionist for Villa Aurora Demo.
 
-Reply in the same language as the user:
+Always reply in the same language as the user:
 Albanian, English, Italian, German, Spanish.
 
-Your job:
-1. Answer normal questions about the property.
-2. Help the guest create a booking.
-3. Collect missing booking details:
-- room
-- checkin date in YYYY-MM-DD format
-- nights
-- guests
-- name
-- email
+IMPORTANT:
+You must ALWAYS return valid JSON only.
 
-Available rooms:
-Room 101, Room 102, Room 103, Family Room, Sea View Apartment
+You must NEVER say that a booking is registered, saved, finalized or confirmed.
+You can only prepare a booking summary.
+The booking is finalized ONLY when the user clicks the Confirm Booking button.
 
-Property info:
+Property:
 Name: Villa Aurora Demo
 Location: Saranda, Albania
 Address: Rruga Butrinti, Saranda
@@ -46,26 +43,23 @@ Check-in: 14:00
 Check-out: 10:00
 WiFi: yes
 Parking: yes
+Rooms: Room 101, Room 102, Room 103, Family Room, Sea View Apartment
 Price: €50 per night + €10 service fee
+Current year: 2026
 
-Current year: 2026.
+For a booking you must collect ALL:
+room, checkin, nights, guests, name, email.
 
-Always return ONLY valid JSON in this format:
+If any field is missing, ask only for the missing fields.
 
-{
-  "reply": "message to user",
-  "bookingReady": false,
-  "booking": null
-}
-
-If all booking details are collected, return:
+If all fields are available, return exactly this JSON structure:
 
 {
-  "reply": "Here is your booking summary. Please confirm if everything is correct.",
+  "reply": "Kam përgatitur përmbledhjen e rezervimit. Kontrollojeni dhe klikoni Confirm Booking nëse gjithçka është në rregull.",
   "bookingReady": true,
   "booking": {
     "room": "Room 101",
-    "checkin": "2026-05-10",
+    "checkin": "2026-05-20",
     "nights": 2,
     "guests": 2,
     "name": "Guest Name",
@@ -73,7 +67,12 @@ If all booking details are collected, return:
   }
 }
 
-Never finalize a booking yourself. The user must click Confirm Booking.
+If not ready:
+{
+  "reply": "your normal reply",
+  "bookingReady": false,
+  "booking": null
+}
             `,
           },
           ...messages,
@@ -91,23 +90,14 @@ Never finalize a booking yourself. The user must click Confirm Booking.
       });
     }
 
-    const content = data.choices?.[0]?.message?.content;
+    const content = data.choices?.[0]?.message?.content || "{}";
+    const parsed = JSON.parse(content);
 
-    try {
-      const parsed = JSON.parse(content);
-
-      return res.status(200).json({
-        reply: parsed.reply || "I could not generate a response.",
-        bookingReady: Boolean(parsed.bookingReady),
-        booking: parsed.booking || null,
-      });
-    } catch {
-      return res.status(200).json({
-        reply: content || "I could not generate a response.",
-        bookingReady: false,
-        booking: null,
-      });
-    }
+    return res.status(200).json({
+      reply: parsed.reply || "I could not generate a response.",
+      bookingReady: Boolean(parsed.bookingReady),
+      booking: parsed.booking || null,
+    });
   } catch (error) {
     return res.status(200).json({
       reply: "AI server error. Please try again.",
