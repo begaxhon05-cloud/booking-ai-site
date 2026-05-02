@@ -41,7 +41,9 @@ export default function App() {
   const pricePerNight = 50;
   const serviceFee = 10;
 
-  const calculateTotal = (nights) => Number(nights) * pricePerNight + serviceFee;
+  const calculateTotal = (nights) =>
+    Number(nights) * pricePerNight + serviceFee;
+
   const totalPrice = calculateTotal(form.nights);
 
   const GOOGLE_SCRIPT_URL =
@@ -71,10 +73,17 @@ export default function App() {
     setLoading(true);
 
     try {
+      const emailPayload = {
+        ...bookingData,
+        to_email: bookingData.email,
+        owner_email: "begaxhon05@gmail.com",
+        total: calculateTotal(bookingData.nights),
+      };
+
       await emailjs.send(
         "service.booking",
         "template_vt1z08k",
-        bookingData,
+        emailPayload,
         "ezj-MNGM2H6cjtxg5"
       );
 
@@ -102,19 +111,50 @@ export default function App() {
   };
 
   const sendMessage = async () => {
-    if (!question.trim() || chatLoading) return;
+    if (!question.trim() || chatLoading || loading) return;
 
-    const userQuestion = question;
+    const userQuestion = question.trim();
+    const confirmWords = [
+      "po",
+      "yes",
+      "confirm",
+      "of course",
+      "ok",
+      "okay",
+      "dakord",
+      "sigurisht",
+      "konfirmoj",
+    ];
+
+    const isConfirm =
+      pendingBooking &&
+      confirmWords.some((word) =>
+        userQuestion.toLowerCase().includes(word)
+      );
+
     const userMsg = { from: "user", text: userQuestion };
-    const updatedMessages = [...messages, userMsg];
 
-    setMessages(updatedMessages);
+    setMessages((prev) => [...prev, userMsg]);
     setQuestion("");
+
+    if (isConfirm) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "bot",
+          text: "Perfect. I am confirming your booking now.",
+        },
+      ]);
+
+      await submitBooking(pendingBooking);
+      return;
+    }
+
     setChatLoading(true);
     setPendingBooking(null);
 
     try {
-      const aiMessages = updatedMessages.map((msg) => ({
+      const aiMessages = [...messages, userMsg].map((msg) => ({
         role: msg.from === "user" ? "user" : "assistant",
         content: msg.text,
       }));
@@ -598,6 +638,10 @@ export default function App() {
                       {loading ? "Confirming..." : "Confirm Booking"}
                     </button>
                   )}
+
+                  <p className="text-xs text-slate-500">
+                    You can also confirm by typing: po, yes, confirm, ok.
+                  </p>
                 </div>
               )}
             </div>
@@ -605,7 +649,7 @@ export default function App() {
             <div className="p-3 border-t border-slate-200 flex gap-2">
               <input
                 value={question}
-                disabled={chatLoading}
+                disabled={chatLoading || loading}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") sendMessage();
@@ -616,11 +660,11 @@ export default function App() {
 
               <button
                 type="button"
-                disabled={chatLoading}
+                disabled={chatLoading || loading}
                 onClick={sendMessage}
                 className="bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white rounded-2xl px-4 text-sm font-semibold"
               >
-                {chatLoading ? "..." : "Send"}
+                {chatLoading || loading ? "..." : "Send"}
               </button>
             </div>
           </div>
