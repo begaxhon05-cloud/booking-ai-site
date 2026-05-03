@@ -1,10 +1,6 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({
-      reply: "Method not allowed",
-      bookingReady: false,
-      booking: null,
-    });
+    return res.status(405).json({ reply: "Method not allowed", bookingReady: false, booking: null });
   }
 
   try {
@@ -19,59 +15,46 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "gpt-4o-mini",
         temperature: 0,
-        response_format: {
-          type: "json_schema",
-          json_schema: {
-            name: "hotel_ai_response",
-            strict: true,
-            schema: {
-              type: "object",
-              additionalProperties: false,
-              required: ["reply", "bookingReady", "booking"],
-              properties: {
-                reply: { type: "string" },
-                bookingReady: { type: "boolean" },
-                booking: {
-                  anyOf: [
-                    {
-                      type: "object",
-                      additionalProperties: false,
-                      required: [
-                        "room",
-                        "checkin",
-                        "nights",
-                        "guests",
-                        "name",
-                        "email",
-                      ],
-                      properties: {
-                        room: { type: "string" },
-                        checkin: { type: "string" },
-                        nights: { type: "number" },
-                        guests: { type: "number" },
-                        name: { type: "string" },
-                        email: { type: "string" },
-                      },
-                    },
-                    { type: "null" },
-                  ],
-                },
-              },
-            },
-          },
-        },
+        response_format: { type: "json_object" },
         messages: [
           {
             role: "system",
             content: `
-You are a professional AI receptionist for Villa Aurora Demo.
+You are a professional AI hotel receptionist for Villa Aurora Demo.
 
-ALWAYS return valid JSON only.
+Always return ONLY valid JSON:
+{
+  "reply": "text to user",
+  "bookingReady": false,
+  "booking": null
+}
 
-Reply in the same language as the user: Albanian, English, Italian, German, Spanish.
+If booking details are complete:
+{
+  "reply": "Kam përgatitur përmbledhjen e rezervimit. Kontrollojeni dhe konfirmojeni duke shkruar po/yes/confirm ose duke klikuar Confirm Booking.",
+  "bookingReady": true,
+  "booking": {
+    "room": "Room 101",
+    "checkin": "2026-06-28",
+    "nights": 2,
+    "guests": 2,
+    "name": "Xhon Bega",
+    "email": "test@test.com"
+  }
+}
+
+Rules:
+- Reply in same language as user: Albanian, English, Italian, German, Spanish.
+- Never say booking is saved/confirmed/finalized before confirmation.
+- To prepare booking collect: room, checkin date YYYY-MM-DD, nights, guests, name, email.
+- If info is missing, ask only for missing info.
+- If user asks availability, check availability object.
+- If date exists in availability[room], room is booked.
+- If date does not exist in availability[room], room is available.
+- If requested room is booked, suggest another room.
 
 Property:
-Name: Villa Aurora Demo
+Villa Aurora Demo
 Location: Saranda, Albania
 Address: Rruga Butrinti, Saranda
 Check-in: 14:00
@@ -82,19 +65,8 @@ Rooms: Room 101, Room 102, Room 103, Family Room, Sea View Apartment
 Price: €50 per night + €10 service fee
 Current year: 2026
 
-Availability by room:
+Availability:
 ${JSON.stringify(availability)}
-
-IMPORTANT RULES:
-- Never say booking is registered, saved, confirmed, finalized, or email sent.
-- Booking is finalized only by the website after user confirms.
-- If user asks if a room/date is available, check Availability by room.
-- If date is listed for that room, it is booked.
-- If date is not listed for that room, it is available.
-- To prepare booking collect: room, checkin date YYYY-MM-DD, nights, guests, name, email.
-- If any field is missing, ask only for missing fields.
-- If all fields are present, set bookingReady true and return booking object.
-- In reply say: "Kam përgatitur përmbledhjen e rezervimit. Kontrollojeni dhe konfirmojeni duke shkruar po/yes/confirm ose duke klikuar Confirm Booking."
             `,
           },
           ...messages,
@@ -112,10 +84,13 @@ IMPORTANT RULES:
       });
     }
 
-    const content = data.choices?.[0]?.message?.content || "{}";
-    const parsed = JSON.parse(content);
+    const parsed = JSON.parse(data.choices?.[0]?.message?.content || "{}");
 
-    return res.status(200).json(parsed);
+    return res.status(200).json({
+      reply: parsed.reply || "Nuk munda të gjeneroj përgjigje.",
+      bookingReady: Boolean(parsed.bookingReady),
+      booking: parsed.booking || null,
+    });
   } catch (error) {
     return res.status(200).json({
       reply: "AI server error. Please try again.",
