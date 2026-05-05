@@ -60,51 +60,94 @@ export default function App() {
   const isRoomBooked = bookedDates?.[form.room]?.includes(form.checkin);
 
   const submitBooking = async (booking) => {
-    if (isUnavailable(booking)) {
-      alert("This room is already booked for this date.");
-      return;
-    }
+  if (isUnavailable(booking)) {
+    alert("This room is already booked for this date.");
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      await emailjs.send(
-        "service.booking",
-        "template_vt1z08k",
-        {
-          ...booking,
-          to_email: booking.email,
-          owner_email: "begaxhon05@gmail.com",
-          total: calculateTotal(booking.nights),
-        },
-        "ezj-MNGM2H6cjtxg5"
-      );
-
-      const params = new URLSearchParams({
+  try {
+    // 1. Save booking in Supabase
+    const supabaseRes = await fetch("/api/create-booking", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        room: booking.room,
+        checkin: booking.checkin,
+        nights: Number(booking.nights),
+        guests: Number(booking.guests),
         name: booking.name,
         email: booking.email,
-        checkin: booking.checkin,
-        nights: String(booking.nights),
-        guests: String(booking.guests),
-        room: booking.room,
-      });
+        source: "website_ai",
+      }),
+    });
 
-      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
+    const supabaseData = await supabaseRes.json();
 
-      setMessages((prev) => [
-        ...prev,
-        { from: "bot", text: "✅ Booking confirmed successfully!" },
-      ]);
-
-      setPendingBooking(null);
-      setSent(true);
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+    if (!supabaseData.success) {
+      throw new Error(supabaseData.error || "Supabase booking failed");
     }
-  };
+
+    // 2. Send email to client + owner
+    await emailjs.send(
+      "service.booking",
+      "template_vt1z08k",
+      {
+        ...booking,
+        to_email: booking.email,
+        owner_email: "begaxhon05@gmail.com",
+        total: calculateTotal(booking.nights),
+      },
+      "ezj-MNGM2H6cjtxg5"
+    );
+
+    // 3. Save also in Google Sheets / WhatsApp automation
+    const params = new URLSearchParams({
+      name: booking.name,
+      email: booking.email,
+      checkin: booking.checkin,
+      nights: String(booking.nights),
+      guests: String(booking.guests),
+      room: booking.room,
+    });
+
+    await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
+
+    // 4. Update local availability immediately
+    setBookedDates((prev) => ({
+      ...prev,
+      [booking.room]: [...(prev[booking.room] || []), booking.checkin],
+    }));
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        from: "bot",
+        text: "✅ Booking confirmed successfully! The booking was saved in Supabase, Google Sheets and confirmation email was sent.",
+      },
+    ]);
+
+    setPendingBooking(null);
+    setSent(true);
+  } catch (err) {
+    console.error(err);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        from: "bot",
+        text: `❌ Booking failed: ${err.message}`,
+      },
+    ]);
+
+    alert(`Booking failed: ${err.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const sendMessage = async () => {
     if (!question.trim() || chatLoading || loading) return;
