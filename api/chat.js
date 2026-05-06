@@ -13,6 +13,29 @@ export default async function handler(req, res) {
     const availability = await getAvailabilityFromSupabase();
     const knowledgeText = await getKnowledgeFromSupabase();
 
+    const lastUserMessage =
+      messages.filter((m) => m.role === "user").pop()?.content?.toLowerCase() ||
+      "";
+
+    if (
+      lastUserMessage.includes("menu") ||
+      lastUserMessage.includes("ushqim") ||
+      lastUserMessage.includes("restaurant") ||
+      lastUserMessage.includes("breakfast") ||
+      lastUserMessage.includes("mëngjes") ||
+      lastUserMessage.includes("pije")
+    ) {
+      const menuAnswer = await getSpecificKnowledgeFromSupabase("menu");
+
+      if (menuAnswer) {
+        return res.status(200).json({
+          reply: menuAnswer,
+          bookingReady: false,
+          booking: null,
+        });
+      }
+    }
+
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -133,6 +156,8 @@ async function getAvailabilityFromSupabase() {
   const bookings = await response.json();
   const availability = {};
 
+  if (!Array.isArray(bookings)) return availability;
+
   for (const booking of bookings) {
     const roomName = booking.rooms?.name;
     const checkin = booking.checkin;
@@ -172,4 +197,33 @@ async function getKnowledgeFromSupabase() {
   return data
     .map((item) => `Question: ${item.question}\nAnswer: ${item.answer}`)
     .join("\n\n");
+}
+
+async function getSpecificKnowledgeFromSupabase(keyword) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceKey) return "";
+
+  const response = await fetch(
+    `${supabaseUrl}/rest/v1/hotel_knowledge?select=question,answer`,
+    {
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!Array.isArray(data)) return "";
+
+  const found = data.find(
+    (item) =>
+      item.question?.toLowerCase().includes(keyword) ||
+      item.answer?.toLowerCase().includes(keyword)
+  );
+
+  return found?.answer || "";
 }
