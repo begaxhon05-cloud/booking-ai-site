@@ -1,10 +1,16 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ reply: "Method not allowed", bookingReady: false, booking: null });
+    return res.status(405).json({
+      reply: "Method not allowed",
+      bookingReady: false,
+      booking: null,
+    });
   }
 
   try {
-    const { messages = [], availability = {} } = req.body;
+    const { messages = [] } = req.body;
+
+    const availability = await getAvailabilityFromSupabase();
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -20,7 +26,7 @@ export default async function handler(req, res) {
           {
             role: "system",
             content: `
-You are a professional AI hotel receptionist for Villa Aurora Demo.
+You are a professional AI receptionist for Villa Aurora Demo.
 
 Always return ONLY valid JSON:
 {
@@ -44,17 +50,20 @@ If booking details are complete:
 }
 
 Rules:
-- Reply in same language as user: Albanian, English, Italian, German, Spanish.
-- Never say booking is saved/confirmed/finalized before confirmation.
+- Reply in the same language as the user.
+- Supported languages: Albanian, English, Italian, German, Spanish.
+- Never say booking is saved, confirmed, finalized, or email sent before confirmation.
 - To prepare booking collect: room, checkin date YYYY-MM-DD, nights, guests, name, email.
 - If info is missing, ask only for missing info.
-- If user asks availability, check availability object.
-- If date exists in availability[room], room is booked.
-- If date does not exist in availability[room], room is available.
-- If requested room is booked, suggest another room.
+- If user asks availability, check the availability data below.
+- If requested date exists in availability[room], that room is booked.
+- If requested date does not exist in availability[room], that room is available.
+- If requested room is booked, suggest another room if available.
+- If all booking details are present and room is available, return bookingReady true.
+- If all booking details are present but room is booked, bookingReady must be false and suggest another room/date.
 
 Property:
-Villa Aurora Demo
+Name: Villa Aurora Demo
 Location: Saranda, Albania
 Address: Rruga Butrinti, Saranda
 Check-in: 14:00
@@ -65,7 +74,7 @@ Rooms: Room 101, Room 102, Room 103, Family Room, Sea View Apartment
 Price: €50 per night + €10 service fee
 Current year: 2026
 
-Availability:
+Live availability from Supabase:
 ${JSON.stringify(availability)}
             `,
           },
@@ -98,4 +107,40 @@ ${JSON.stringify(availability)}
       booking: null,
     });
   }
+}
+
+async function getAvailabilityFromSupabase() {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceKey) return {};
+
+  const response = await fetch(
+    `${supabaseUrl}/rest/v1/bookings?select=checkin,rooms(name)&status=eq.confirmed`,
+    {
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+      },
+    }
+  );
+
+  const bookings = await response.json();
+
+  const availability = {};
+
+  for (const booking of bookings) {
+    const roomName = booking.rooms?.name;
+    const checkin = booking.checkin;
+
+    if (!roomName || !checkin) continue;
+
+    if (!availability[roomName]) {
+      availability[roomName] = [];
+    }
+
+    availability[roomName].push(checkin);
+  }
+
+  return availability;
 }
