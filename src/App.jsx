@@ -3,12 +3,24 @@ import emailjs from "@emailjs/browser";
 import { propertyInfo } from "./propertyInfo";
 import AdminDashboard from "./AdminDashboard";
 import "./App.css";
+import AdminLogin from "./AdminLogin";
 
 export default function App() {
 
-  if (window.location.pathname === "/admin") {
-    return <AdminDashboard />;
-    }
+  if (window.location.pathname === "/admin/login") {
+  return <AdminLogin />;
+}
+
+if (window.location.pathname === "/admin") {
+  const isLoggedIn = localStorage.getItem("admin_logged_in");
+
+  if (!isLoggedIn) {
+    window.location.href = "/admin/login";
+    return null;
+  }
+
+  return <AdminDashboard />;
+}
   const [step, setStep] = useState(1);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
