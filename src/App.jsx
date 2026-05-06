@@ -14,7 +14,7 @@ export default function App() {
 if (window.location.pathname === "/admin") {
   const isLoggedIn = localStorage.getItem("admin_logged_in");
 
-  if (!isLoggedIn) {
+  if (isLoggedIn !== "true") {
     window.location.href = "/admin/login";
     return null;
   }
