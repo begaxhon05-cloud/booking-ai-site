@@ -11,6 +11,7 @@ export default async function handler(req, res) {
     const { messages = [] } = req.body;
 
     const availability = await getAvailabilityFromSupabase();
+    const knowledgeText = await getKnowledgeFromSupabase();
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -61,6 +62,7 @@ Rules:
 - If requested room is booked, suggest another room if available.
 - If all booking details are present and room is available, return bookingReady true.
 - If all booking details are present but room is booked, bookingReady must be false and suggest another room/date.
+- For hotel questions like parking, wifi, menu, breakfast, pets, location, use Hotel Knowledge Base.
 
 Property:
 Name: Villa Aurora Demo
@@ -73,6 +75,9 @@ Parking: yes
 Rooms: Room 101, Room 102, Room 103, Family Room, Sea View Apartment
 Price: €50 per night + €10 service fee
 Current year: 2026
+
+Hotel Knowledge Base:
+${knowledgeText}
 
 Live availability from Supabase:
 ${JSON.stringify(availability)}
@@ -126,7 +131,6 @@ async function getAvailabilityFromSupabase() {
   );
 
   const bookings = await response.json();
-
   const availability = {};
 
   for (const booking of bookings) {
@@ -143,4 +147,29 @@ async function getAvailabilityFromSupabase() {
   }
 
   return availability;
+}
+
+async function getKnowledgeFromSupabase() {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceKey) return "";
+
+  const response = await fetch(
+    `${supabaseUrl}/rest/v1/hotel_knowledge?select=question,answer`,
+    {
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!Array.isArray(data)) return "";
+
+  return data
+    .map((item) => `Question: ${item.question}\nAnswer: ${item.answer}`)
+    .join("\n\n");
 }
