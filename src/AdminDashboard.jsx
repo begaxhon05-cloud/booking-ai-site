@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const fetchBookings = async () => {
     try {
@@ -29,15 +32,17 @@ export default function AdminDashboard() {
     0
   );
 
+  const bookedDates = bookings.map((b) => b.checkin);
+
+  const formatDate = (date) => date.toISOString().split("T")[0];
+
   return (
     <div className="min-h-screen bg-slate-950 text-white p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-4xl font-bold">Admin Dashboard</h1>
-            <p className="text-slate-400 mt-2">
-              Live bookings from Supabase
-            </p>
+            <p className="text-slate-400 mt-2">Live bookings from Supabase</p>
           </div>
 
           <button
@@ -65,64 +70,84 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-white text-slate-900 rounded-3xl overflow-hidden shadow-2xl">
-          <div className="p-5 border-b">
-            <h2 className="text-xl font-bold">Bookings</h2>
+        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white text-slate-900 rounded-3xl p-6 shadow-2xl">
+            <h2 className="text-xl font-bold mb-4">Availability Calendar</h2>
+
+            <Calendar
+              onChange={setSelectedDate}
+              value={selectedDate}
+              tileClassName={({ date }) => {
+                const dateString = formatDate(date);
+                return bookedDates.includes(dateString)
+                  ? "bg-red-500 text-white rounded-xl"
+                  : "";
+              }}
+            />
+
+            <p className="text-sm text-slate-500 mt-4">
+              Red dates are booked check-in dates.
+            </p>
           </div>
 
-          {loading ? (
-            <div className="p-8 text-center text-slate-500">Loading...</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-slate-100">
-                  <tr>
-                    <th className="text-left p-4">Customer</th>
-                    <th className="text-left p-4">Email</th>
-                    <th className="text-left p-4">Room</th>
-                    <th className="text-left p-4">Check-in</th>
-                    <th className="text-left p-4">Nights</th>
-                    <th className="text-left p-4">Guests</th>
-                    <th className="text-left p-4">Total</th>
-                    <th className="text-left p-4">Status</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {bookings.map((booking) => (
-                    <tr key={booking.id} className="border-t">
-                      <td className="p-4 font-semibold">
-                        {booking.customers?.full_name || "-"}
-                      </td>
-                      <td className="p-4">
-                        {booking.customers?.email || "-"}
-                      </td>
-                      <td className="p-4">
-                        {booking.rooms?.name || "-"}
-                      </td>
-                      <td className="p-4">{booking.checkin}</td>
-                      <td className="p-4">{booking.nights}</td>
-                      <td className="p-4">{booking.guests}</td>
-                      <td className="p-4 font-bold">€{booking.total}</td>
-                      <td className="p-4">
-                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
-                          {booking.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-
-                  {bookings.length === 0 && (
-                    <tr>
-                      <td colSpan="8" className="p-8 text-center text-slate-500">
-                        No bookings found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+          <div className="lg:col-span-2 bg-white text-slate-900 rounded-3xl overflow-hidden shadow-2xl">
+            <div className="p-5 border-b">
+              <h2 className="text-xl font-bold">Bookings</h2>
             </div>
-          )}
+
+            {loading ? (
+              <div className="p-8 text-center text-slate-500">Loading...</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-100">
+                    <tr>
+                      <th className="text-left p-4">Customer</th>
+                      <th className="text-left p-4">Email</th>
+                      <th className="text-left p-4">Room</th>
+                      <th className="text-left p-4">Check-in</th>
+                      <th className="text-left p-4">Nights</th>
+                      <th className="text-left p-4">Guests</th>
+                      <th className="text-left p-4">Total</th>
+                      <th className="text-left p-4">Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {bookings.map((booking) => (
+                      <tr key={booking.id} className="border-t">
+                        <td className="p-4 font-semibold">
+                          {booking.customers?.full_name || "-"}
+                        </td>
+                        <td className="p-4">{booking.customers?.email || "-"}</td>
+                        <td className="p-4">{booking.rooms?.name || "-"}</td>
+                        <td className="p-4">{booking.checkin}</td>
+                        <td className="p-4">{booking.nights}</td>
+                        <td className="p-4">{booking.guests}</td>
+                        <td className="p-4 font-bold">€{booking.total}</td>
+                        <td className="p-4">
+                          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
+                            {booking.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+
+                    {bookings.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan="8"
+                          className="p-8 text-center text-slate-500"
+                        >
+                          No bookings found.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
