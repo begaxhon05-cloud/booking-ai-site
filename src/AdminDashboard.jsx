@@ -32,15 +32,17 @@ export default function AdminDashboard() {
     0
   );
 
-  const bookedDates = bookings.map((b) => b.checkin);
+  const bookedDates = bookings.map((booking) => booking.checkin);
 
   const formatDate = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
-  return `${year}-${month}-${day}`;
-};
+    return `${year}-${month}-${day}`;
+  };
+
+  return (
     <div className="min-h-screen bg-slate-950 text-white p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
@@ -82,9 +84,9 @@ export default function AdminDashboard() {
               onChange={setSelectedDate}
               value={selectedDate}
               tileClassName={({ date }) => {
-  const dateString = formatDate(date);
-  return bookedDates.includes(dateString) ? "booked-day" : "";
-}}
+                const dateString = formatDate(date);
+                return bookedDates.includes(dateString) ? "booked-day" : "";
+              }}
             />
 
             <p className="text-sm text-slate-500 mt-4">
@@ -121,7 +123,9 @@ export default function AdminDashboard() {
                         <td className="p-4 font-semibold">
                           {booking.customers?.full_name || "-"}
                         </td>
-                        <td className="p-4">{booking.customers?.email || "-"}</td>
+                        <td className="p-4">
+                          {booking.customers?.email || "-"}
+                        </td>
                         <td className="p-4">{booking.rooms?.name || "-"}</td>
                         <td className="p-4">{booking.checkin}</td>
                         <td className="p-4">{booking.nights}</td>
