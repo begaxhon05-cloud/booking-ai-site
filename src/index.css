@@ -1,1 +1,11 @@
 @import "tailwindcss";
+.booked-day {
+  background: #ef4444 !important;
+  color: white !important;
+  border-radius: 12px !important;
+}
+
+.booked-day:hover {
+  background: #dc2626 !important;
+  color: white !important;
+}

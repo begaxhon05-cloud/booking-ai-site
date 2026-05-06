@@ -78,11 +78,9 @@ export default function AdminDashboard() {
               onChange={setSelectedDate}
               value={selectedDate}
               tileClassName={({ date }) => {
-                const dateString = formatDate(date);
-                return bookedDates.includes(dateString)
-                  ? "bg-red-500 text-white rounded-xl"
-                  : "";
-              }}
+  const dateString = formatDate(date);
+  return bookedDates.includes(dateString) ? "booked-day" : "";
+}}
             />
 
             <p className="text-sm text-slate-500 mt-4">
