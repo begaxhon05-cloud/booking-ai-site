@@ -8,7 +8,7 @@ export default function App() {
 
   if (window.location.pathname === "/admin") {
     return <AdminDashboard />;
-  }
+    }
   const [step, setStep] = useState(1);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
