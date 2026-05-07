@@ -23,16 +23,49 @@ export default function AdminDashboard() {
     }
   };
 
+  const cancelBooking = async (bookingId) => {
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this booking?"
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+      const res = await fetch("/api/cancel-booking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ bookingId }),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        alert(data.error || "Cancel failed");
+        return;
+      }
+
+      await fetchBookings();
+    } catch (error) {
+      alert("Cancel failed");
+    }
+  };
+
   useEffect(() => {
     fetchBookings();
   }, []);
 
-  const totalRevenue = bookings.reduce(
+  const activeBookings = bookings.filter(
+    (booking) => booking.status !== "cancelled"
+  );
+
+  const totalRevenue = activeBookings.reduce(
     (sum, booking) => sum + Number(booking.total || 0),
     0
   );
 
-  const bookedDates = bookings.map((booking) => booking.checkin);
+  const bookedDates = activeBookings.map((booking) => booking.checkin);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -52,29 +85,29 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex gap-3">
-  <button
-    onClick={fetchBookings}
-    className="bg-yellow-400 text-slate-950 font-bold px-5 py-3 rounded-2xl"
-  >
-    Refresh
-  </button>
+            <button
+              onClick={fetchBookings}
+              className="bg-yellow-400 text-slate-950 font-bold px-5 py-3 rounded-2xl"
+            >
+              Refresh
+            </button>
 
-  <button
-    onClick={() => {
-      localStorage.removeItem("admin_logged_in");
-      window.location.href = "/admin/login";
-    }}
-    className="bg-red-500 text-white font-bold px-5 py-3 rounded-2xl"
-  >
-    Logout
-  </button>
-</div>
+            <button
+              onClick={() => {
+                localStorage.removeItem("admin_logged_in");
+                window.location.href = "/admin/login";
+              }}
+              className="bg-red-500 text-white font-bold px-5 py-3 rounded-2xl"
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5 mb-8">
           <div className="bg-white/10 border border-white/10 rounded-3xl p-6">
-            <p className="text-slate-400">Total Bookings</p>
-            <p className="text-4xl font-bold mt-2">{bookings.length}</p>
+            <p className="text-slate-400">Active Bookings</p>
+            <p className="text-4xl font-bold mt-2">{activeBookings.length}</p>
           </div>
 
           <div className="bg-white/10 border border-white/10 rounded-3xl p-6">
@@ -102,7 +135,7 @@ export default function AdminDashboard() {
             />
 
             <p className="text-sm text-slate-500 mt-4">
-              Red dates are booked check-in dates.
+              Red dates are active booked check-in dates.
             </p>
           </div>
 
@@ -126,12 +159,20 @@ export default function AdminDashboard() {
                       <th className="text-left p-4">Guests</th>
                       <th className="text-left p-4">Total</th>
                       <th className="text-left p-4">Status</th>
+                      <th className="text-left p-4">Actions</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     {bookings.map((booking) => (
-                      <tr key={booking.id} className="border-t">
+                      <tr
+                        key={booking.id}
+                        className={
+                          booking.status === "cancelled"
+                            ? "border-t bg-red-50"
+                            : "border-t"
+                        }
+                      >
                         <td className="p-4 font-semibold">
                           {booking.customers?.full_name || "-"}
                         </td>
@@ -144,9 +185,29 @@ export default function AdminDashboard() {
                         <td className="p-4">{booking.guests}</td>
                         <td className="p-4 font-bold">€{booking.total}</td>
                         <td className="p-4">
-                          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
+                          <span
+                            className={
+                              booking.status === "cancelled"
+                                ? "bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold"
+                                : "bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold"
+                            }
+                          >
                             {booking.status}
                           </span>
+                        </td>
+                        <td className="p-4">
+                          {booking.status === "cancelled" ? (
+                            <span className="text-slate-400 text-xs">
+                              Cancelled
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => cancelBooking(booking.id)}
+                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-xl text-xs font-bold"
+                            >
+                              Cancel
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -154,7 +215,7 @@ export default function AdminDashboard() {
                     {bookings.length === 0 && (
                       <tr>
                         <td
-                          colSpan="8"
+                          colSpan="9"
                           className="p-8 text-center text-slate-500"
                         >
                           No bookings found.
