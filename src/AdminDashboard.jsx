@@ -51,12 +51,24 @@ export default function AdminDashboard() {
             <p className="text-slate-400 mt-2">Live bookings from Supabase</p>
           </div>
 
-          <button
-            onClick={fetchBookings}
-            className="bg-yellow-400 text-slate-950 font-bold px-5 py-3 rounded-2xl"
-          >
-            Refresh
-          </button>
+          <div className="flex gap-3">
+  <button
+    onClick={fetchBookings}
+    className="bg-yellow-400 text-slate-950 font-bold px-5 py-3 rounded-2xl"
+  >
+    Refresh
+  </button>
+
+  <button
+    onClick={() => {
+      localStorage.removeItem("admin_logged_in");
+      window.location.href = "/admin/login";
+    }}
+    className="bg-red-500 text-white font-bold px-5 py-3 rounded-2xl"
+  >
+    Logout
+  </button>
+</div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5 mb-8">
