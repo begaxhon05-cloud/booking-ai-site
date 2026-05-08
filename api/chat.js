@@ -10,8 +10,9 @@ export default async function handler(req, res) {
   try {
     const { messages = [] } = req.body;
 
+    const normalizedMessages = normalizeMessages(messages);
     const lastUserMessage =
-      messages.filter((m) => m.role === "user").pop()?.content || "";
+      normalizedMessages.filter((m) => m.role === "user").pop()?.content || "";
 
     const lastText = lastUserMessage.toLowerCase();
 
@@ -23,19 +24,40 @@ export default async function handler(req, res) {
       lastText.includes("zene") ||
       lastText.includes("zënë") ||
       lastText.includes("booked") ||
-      lastText.includes("rezervuar");
+      lastText.includes("rezervuar") ||
+      lastText.includes("gusht") ||
+      lastText.includes("august");
 
     const extractedRoom = extractRoom(lastText);
     const extractedDate = extractDate(lastText);
+    const extractedMonth = extractMonth(lastText);
 
-    if (
-      availabilityIntent &&
-      (lastText.includes("gusht") || lastText.includes("august")) &&
-      !extractedDate
-    ) {
+    if (availabilityIntent && extractedRoom && extractedMonth && !extractedDate) {
+      const monthResult = await checkMonthAvailabilityFromSupabase(
+        extractedRoom,
+        extractedMonth
+      );
+
+      if (!monthResult.roomFound) {
+        return res.status(200).json({
+          reply: `Nuk e gjeta dhomën ${extractedRoom}. Dhomat janë Room 101, Room 102, Room 103, Family Room dhe Sea View Apartment.`,
+          bookingReady: false,
+          booking: null,
+        });
+      }
+
+      if (monthResult.bookedDates.length === 0) {
+        return res.status(200).json({
+          reply: `${extractedRoom} nuk ka asnjë check-in të rezervuar në ${monthResult.monthName} 2026 sipas Supabase. Më jepni datën specifike që dëshironi të rezervoni.`,
+          bookingReady: false,
+          booking: null,
+        });
+      }
+
       return res.status(200).json({
-        reply:
-          "Për të kontrolluar disponueshmërinë në gusht, më jepni një datë specifike, p.sh. 2026-08-10 ose 10 gusht 2026.",
+        reply: `${extractedRoom} ka këto data check-in të zëna në ${monthResult.monthName} 2026: ${monthResult.bookedDates.join(
+          ", "
+        )}. Datat e tjera nuk rezultojnë të zëna në Supabase. Më jepni datën specifike që dëshironi të rezervoni.`,
         bookingReady: false,
         booking: null,
       });
@@ -49,31 +71,25 @@ export default async function handler(req, res) {
 
       if (!result.roomFound) {
         return res.status(200).json({
-          reply: `Nuk e gjeta dhomën ${extractedRoom}. Dhomat e disponueshme janë Room 101, Room 102, Room 103, Family Room dhe Sea View Apartment.`,
-          bookingReady: false,
-          booking: null,
-        });
-      }
-
-      if (result.available) {
-        return res.status(200).json({
-          reply: `${extractedRoom} është e lirë më datë ${extractedDate}. Dëshironi ta rezervoni?`,
+          reply: `Nuk e gjeta dhomën ${extractedRoom}. Dhomat janë Room 101, Room 102, Room 103, Family Room dhe Sea View Apartment.`,
           bookingReady: false,
           booking: null,
         });
       }
 
       return res.status(200).json({
-        reply: `${extractedRoom} është e zënë më datë ${extractedDate}. Mund të kontrolloj një datë tjetër ose një dhomë tjetër për ju.`,
+        reply: result.available
+          ? `${extractedRoom} është e lirë më datë ${extractedDate}. Dëshironi ta rezervoni?`
+          : `${extractedRoom} është e zënë më datë ${extractedDate}. Mund të kontrolloj një datë tjetër ose një dhomë tjetër për ju.`,
         bookingReady: false,
         booking: null,
       });
     }
 
-    if (availabilityIntent && (!extractedRoom || !extractedDate)) {
+    if (availabilityIntent && extractedMonth && !extractedRoom) {
       return res.status(200).json({
         reply:
-          "Për të kontrolluar saktë disponueshmërinë, më jepni dhomën dhe datën specifike. Shembull: A është e lirë Room 101 më 2026-08-10?",
+          "Për të kontrolluar disponueshmërinë në një muaj, më jepni edhe dhomën. Shembull: A është e lirë Room 101 në gusht?",
         bookingReady: false,
         booking: null,
       });
@@ -99,7 +115,6 @@ export default async function handler(req, res) {
       }
     }
 
-    const availability = await getAvailabilityFromSupabase();
     const knowledgeText = await getKnowledgeFromSupabase();
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -125,34 +140,14 @@ Always return ONLY valid JSON:
   "booking": null
 }
 
-If booking details are complete:
-{
-  "reply": "Kam përgatitur përmbledhjen e rezervimit. Kontrollojeni dhe konfirmojeni duke shkruar po/yes/confirm ose duke klikuar Confirm Booking.",
-  "bookingReady": true,
-  "booking": {
-    "room": "Room 101",
-    "checkin": "2026-06-28",
-    "nights": 2,
-    "guests": 2,
-    "name": "Xhon Bega",
-    "email": "test@test.com"
-  }
-}
-
-Important rules:
+Rules:
 - Reply in the same language as the user.
-- Supported languages: Albanian, English, Italian, German, Spanish.
-- Never say booking is saved, confirmed, finalized, or email sent before confirmation.
+- Never say a whole month is fully booked.
+- If user asks availability for a month without exact date, ask for room/date.
+- If user asks availability for exact date, the backend handles it before you.
 - To prepare booking collect: room, checkin date YYYY-MM-DD, nights, guests, name, email.
-- If info is missing, ask only for missing info.
-- Do not claim a whole month is booked unless every date is confirmed booked.
-- If user asks about availability without an exact date, ask for a specific date.
-- If all booking details are present, use the availability data below only for exact date match.
-- If requested exact date exists in availability[room], that room is booked.
-- If requested exact date does not exist in availability[room], that room is available.
-- If all booking details are present and room is available, return bookingReady true.
-- If room is booked, bookingReady must be false and suggest another room/date.
-- For hotel questions like parking, wifi, menu, breakfast, pets, location, use Hotel Knowledge Base.
+- If booking details are complete, return bookingReady true.
+- Never say booking is saved or confirmed before user confirms.
 
 Property:
 Name: Villa Aurora Demo
@@ -160,20 +155,15 @@ Location: Saranda, Albania
 Address: Rruga Butrinti, Saranda
 Check-in: 14:00
 Check-out: 10:00
-WiFi: yes
-Parking: yes
 Rooms: Room 101, Room 102, Room 103, Family Room, Sea View Apartment
 Price: €50 per night + €10 service fee
 Current year: 2026
 
 Hotel Knowledge Base:
 ${knowledgeText}
-
-Booked exact check-in dates from Supabase:
-${JSON.stringify(availability)}
             `,
           },
-          ...messages,
+          ...normalizedMessages,
         ],
       }),
     });
@@ -204,6 +194,29 @@ ${JSON.stringify(availability)}
   }
 }
 
+function normalizeMessages(messages) {
+  return messages
+    .map((msg) => {
+      if (msg.role && msg.content) {
+        return {
+          role: msg.role === "bot" ? "assistant" : msg.role,
+          content: msg.content,
+        };
+      }
+
+      if (msg.from && msg.text) {
+        return {
+          role: msg.from === "user" ? "user" : "assistant",
+          content: msg.text,
+        };
+      }
+
+      return null;
+    })
+    .filter(Boolean)
+    .filter((msg) => ["user", "assistant", "system"].includes(msg.role));
+}
+
 function extractRoom(text) {
   if (text.includes("101")) return "Room 101";
   if (text.includes("102")) return "Room 102";
@@ -213,6 +226,31 @@ function extractRoom(text) {
   if (text.includes("sea view")) return "Sea View Apartment";
   if (text.includes("apartment")) return "Sea View Apartment";
   if (text.includes("apartament")) return "Sea View Apartment";
+  return null;
+}
+
+function extractMonth(text) {
+  const months = {
+    janar: { number: "01", name: "janar" },
+    shkurt: { number: "02", name: "shkurt" },
+    mars: { number: "03", name: "mars" },
+    prill: { number: "04", name: "prill" },
+    maj: { number: "05", name: "maj" },
+    qershor: { number: "06", name: "qershor" },
+    korrik: { number: "07", name: "korrik" },
+    gusht: { number: "08", name: "gusht" },
+    shtator: { number: "09", name: "shtator" },
+    tetor: { number: "10", name: "tetor" },
+    nentor: { number: "11", name: "nëntor" },
+    nëntor: { number: "11", name: "nëntor" },
+    dhjetor: { number: "12", name: "dhjetor" },
+    august: { number: "08", name: "August" },
+  };
+
+  for (const [key, value] of Object.entries(months)) {
+    if (text.includes(key)) return value;
+  }
+
   return null;
 }
 
@@ -227,42 +265,15 @@ function extractDate(text) {
     return `2026-${month}-${day}`;
   }
 
-  const months = {
-    janar: "01",
-    shkurt: "02",
-    mars: "03",
-    prill: "04",
-    maj: "05",
-    qershor: "06",
-    korrik: "07",
-    gusht: "08",
-    shtator: "09",
-    tetor: "10",
-    nentor: "11",
-    nëntor: "11",
-    dhjetor: "12",
-    january: "01",
-    february: "02",
-    march: "03",
-    april: "04",
-    may: "05",
-    june: "06",
-    july: "07",
-    august: "08",
-    september: "09",
-    october: "10",
-    november: "11",
-    december: "12",
-  };
+  const month = extractMonth(text);
+  if (!month) return null;
 
-  for (const [monthName, monthNumber] of Object.entries(months)) {
-    const regex = new RegExp(`\\b(\\d{1,2})\\s+${monthName}\\s*(2026)?\\b`);
-    const match = text.match(regex);
+  const regex = new RegExp(`\\b(\\d{1,2})\\s+`);
+  const match = text.match(regex);
 
-    if (match) {
-      const day = match[1].padStart(2, "0");
-      return `2026-${monthNumber}-${day}`;
-    }
+  if (match) {
+    const day = match[1].padStart(2, "0");
+    return `2026-${month.number}-${day}`;
   }
 
   return null;
@@ -272,34 +283,8 @@ async function checkAvailabilityFromSupabase(roomName, checkin) {
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl || !serviceKey) {
-    return {
-      roomFound: false,
-      available: false,
-    };
-  }
-
-  const roomRes = await fetch(
-    `${supabaseUrl}/rest/v1/rooms?select=id,name&name=eq.${encodeURIComponent(
-      roomName
-    )}&limit=1`,
-    {
-      headers: {
-        apikey: serviceKey,
-        Authorization: `Bearer ${serviceKey}`,
-      },
-    }
-  );
-
-  const rooms = await roomRes.json();
-  const room = rooms?.[0];
-
-  if (!room) {
-    return {
-      roomFound: false,
-      available: false,
-    };
-  }
+  const room = await getRoom(roomName, supabaseUrl, serviceKey);
+  if (!room) return { roomFound: false, available: false };
 
   const bookingRes = await fetch(
     `${supabaseUrl}/rest/v1/bookings?select=id&room_id=eq.${room.id}&checkin=eq.${checkin}&status=eq.confirmed`,
@@ -319,14 +304,24 @@ async function checkAvailabilityFromSupabase(roomName, checkin) {
   };
 }
 
-async function getAvailabilityFromSupabase() {
+async function checkMonthAvailabilityFromSupabase(roomName, month) {
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl || !serviceKey) return {};
+  const room = await getRoom(roomName, supabaseUrl, serviceKey);
+  if (!room) {
+    return {
+      roomFound: false,
+      bookedDates: [],
+      monthName: month.name,
+    };
+  }
 
-  const response = await fetch(
-    `${supabaseUrl}/rest/v1/bookings?select=checkin,rooms(name)&status=eq.confirmed`,
+  const startDate = `2026-${month.number}-01`;
+  const endDate = `2026-${month.number}-31`;
+
+  const bookingRes = await fetch(
+    `${supabaseUrl}/rest/v1/bookings?select=checkin&room_id=eq.${room.id}&checkin=gte.${startDate}&checkin=lte.${endDate}&status=eq.confirmed`,
     {
       headers: {
         apikey: serviceKey,
@@ -335,25 +330,30 @@ async function getAvailabilityFromSupabase() {
     }
   );
 
-  const bookings = await response.json();
-  const availability = {};
+  const bookings = await bookingRes.json();
 
-  if (!Array.isArray(bookings)) return availability;
+  return {
+    roomFound: true,
+    bookedDates: Array.isArray(bookings) ? bookings.map((b) => b.checkin) : [],
+    monthName: month.name,
+  };
+}
 
-  for (const booking of bookings) {
-    const roomName = booking.rooms?.name;
-    const checkin = booking.checkin;
-
-    if (!roomName || !checkin) continue;
-
-    if (!availability[roomName]) {
-      availability[roomName] = [];
+async function getRoom(roomName, supabaseUrl, serviceKey) {
+  const roomRes = await fetch(
+    `${supabaseUrl}/rest/v1/rooms?select=id,name&name=eq.${encodeURIComponent(
+      roomName
+    )}&limit=1`,
+    {
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+      },
     }
+  );
 
-    availability[roomName].push(checkin);
-  }
-
-  return availability;
+  const rooms = await roomRes.json();
+  return rooms?.[0] || null;
 }
 
 async function getKnowledgeFromSupabase() {
