@@ -85,7 +85,6 @@ if (window.location.pathname === "/admin") {
   setLoading(true);
 
   try {
-    // 1. Save booking in Supabase
     const supabaseRes = await fetch("/api/create-booking", {
       method: "POST",
       headers: {
@@ -108,7 +107,6 @@ if (window.location.pathname === "/admin") {
       throw new Error(supabaseData.error || "Supabase booking failed");
     }
 
-    // 2. Send email to client + owner
     await emailjs.send(
       "service.booking",
       "template_vt1z08k",
@@ -121,7 +119,6 @@ if (window.location.pathname === "/admin") {
       "ezj-MNGM2H6cjtxg5"
     );
 
-    // 3. Save also in Google Sheets / WhatsApp automation
     const params = new URLSearchParams({
       name: booking.name,
       email: booking.email,
@@ -133,7 +130,25 @@ if (window.location.pathname === "/admin") {
 
     await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
 
-    // 4. Update local availability immediately
+    await fetch("/api/send-whatsapp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        to: "+355685090050",
+        message: `✅ New booking confirmed
+
+Customer: ${booking.name}
+Email: ${booking.email}
+Room: ${booking.room}
+Check-in: ${booking.checkin}
+Nights: ${booking.nights}
+Guests: ${booking.guests}
+Total: €${calculateTotal(booking.nights)}`,
+      }),
+    });
+
     setBookedDates((prev) => ({
       ...prev,
       [booking.room]: [...(prev[booking.room] || []), booking.checkin],
@@ -143,7 +158,7 @@ if (window.location.pathname === "/admin") {
       ...prev,
       {
         from: "bot",
-        text: "✅ Booking confirmed successfully! The booking was saved in Supabase, Google Sheets and confirmation email was sent.",
+        text: "✅ Booking confirmed successfully! The booking was saved in Supabase, Google Sheets, email was sent and WhatsApp notification was delivered.",
       },
     ]);
 
