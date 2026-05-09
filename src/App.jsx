@@ -85,6 +85,7 @@ if (window.location.pathname === "/admin") {
   setLoading(true);
 
   try {
+    // 1. Ruaj në Supabase / Dashboard
     const supabaseRes = await fetch("/api/create-booking", {
       method: "POST",
       headers: {
@@ -107,18 +108,9 @@ if (window.location.pathname === "/admin") {
       throw new Error(supabaseData.error || "Supabase booking failed");
     }
 
-    await emailjs.send(
-      "service.booking",
-      "template_vt1z08k",
-      {
-        ...booking,
-        to_email: booking.email,
-        owner_email: "begaxhon05@gmail.com",
-        total: calculateTotal(booking.nights),
-      },
-      "ezj-MNGM2H6cjtxg5"
-    );
+    const total = calculateTotal(booking.nights);
 
+    // 2. Ruaj në Google Sheets + WhatsApp ekzistues
     const params = new URLSearchParams({
       name: booking.name,
       email: booking.email,
@@ -130,7 +122,34 @@ if (window.location.pathname === "/admin") {
 
     await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
 
-    await fetch("/api/send-whatsapp", {
+    // 3. Email klientit
+    const clientEmail = emailjs.send(
+      "service.booking",
+      "template_vt1z08k",
+      {
+        ...booking,
+        to_email: booking.email,
+        owner_email: "begaxhon05@gmail.com",
+        total,
+      },
+      "ezj-MNGM2H6cjtxg5"
+    );
+
+    // 4. Email pronarit
+    const ownerEmail = emailjs.send(
+      "service.booking",
+      "template_vt1z08k",
+      {
+        ...booking,
+        to_email: "begaxhon05@gmail.com",
+        owner_email: "begaxhon05@gmail.com",
+        total,
+      },
+      "ezj-MNGM2H6cjtxg5"
+    );
+
+    // 5. WhatsApp pronarit
+    const ownerWhatsApp = fetch("/api/send-whatsapp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -145,9 +164,11 @@ Room: ${booking.room}
 Check-in: ${booking.checkin}
 Nights: ${booking.nights}
 Guests: ${booking.guests}
-Total: €${calculateTotal(booking.nights)}`,
+Total: €${total}`,
       }),
     });
+
+    await Promise.allSettled([clientEmail, ownerEmail, ownerWhatsApp]);
 
     setBookedDates((prev) => ({
       ...prev,
@@ -158,7 +179,7 @@ Total: €${calculateTotal(booking.nights)}`,
       ...prev,
       {
         from: "bot",
-        text: "✅ Booking confirmed successfully! The booking was saved in Supabase, Google Sheets, email was sent and WhatsApp notification was delivered.",
+        text: "✅ Rezervimi u konfirmua me sukses. U ruajt në dashboard dhe konfirmimi u dërgua me email.",
       },
     ]);
 
@@ -182,72 +203,87 @@ Total: €${calculateTotal(booking.nights)}`,
 };
 
   const sendMessage = async () => {
-    if (!question.trim() || chatLoading || loading) return;
+  if (!question.trim() || chatLoading || loading) return;
 
-    const userQuestion = question.trim();
-    const userMsg = { from: "user", text: userQuestion };
+  const userQuestion = question.trim();
+  const normalized = userQuestion.toLowerCase();
 
-    const confirmWords = [
-      "po",
-      "yes",
-      "confirm",
-      "ok",
-      "okay",
-      "dakord",
-      "sigurisht",
-      "konfirmoj",
-      "of course",
-    ];
+  const userMsg = { from: "user", text: userQuestion };
 
-    const isConfirm =
-      pendingBooking &&
-      confirmWords.some((w) => userQuestion.toLowerCase().includes(w));
+  const confirmWords = [
+    "po",
+    "yes",
+    "confirm",
+    "konfirmoj",
+    "ok",
+    "okay",
+    "dakord",
+    "sigurisht",
+    "of course",
+    "po e konfirmoj",
+    "e konfirmoj",
+    "confirm booking",
+    "yes please",
+    "sure",
+    "perfect",
+    "perfekt",
+  ];
 
-    setMessages((prev) => [...prev, userMsg]);
-    setQuestion("");
+  const isConfirm =
+    pendingBooking &&
+    confirmWords.some((word) => normalized.includes(word));
 
-    if (isConfirm) {
-      setMessages((prev) => [
-        ...prev,
-        { from: "bot", text: "Processing your booking..." },
-      ]);
-      await submitBooking(pendingBooking);
-      return;
+  setMessages((prev) => [...prev, userMsg]);
+  setQuestion("");
+
+  if (isConfirm) {
+    setMessages((prev) => [
+      ...prev,
+      {
+        from: "bot",
+        text: "Po e konfirmoj rezervimin tani...",
+      },
+    ]);
+
+    await submitBooking(pendingBooking);
+    return;
+  }
+
+  setChatLoading(true);
+
+  try {
+    const aiMessages = [...messages, userMsg].map((m) => ({
+      role: m.from === "user" ? "user" : "assistant",
+      content: m.text,
+    }));
+
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: aiMessages,
+      }),
+    });
+
+    const data = await res.json();
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        from: "bot",
+        text: data.reply || "I could not generate a response.",
+      },
+    ]);
+
+    if (data.bookingReady && data.booking) {
+      setPendingBooking(data.booking);
     }
-
-    setChatLoading(true);
-
-    try {
-      const aiMessages = [...messages, userMsg].map((m) => ({
-        role: m.from === "user" ? "user" : "assistant",
-        content: m.text,
-      }));
-
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: aiMessages,
-          availability: bookedDates,
-        }),
-      });
-
-      const data = await res.json();
-
-      setMessages((prev) => [
-        ...prev,
-        { from: "bot", text: data.reply || "I could not generate a response." },
-      ]);
-
-      if (data.bookingReady && data.booking) {
-        setPendingBooking(data.booking);
-      }
-    } catch (err) {
-      setMessages((prev) => [...prev, { from: "bot", text: "AI error." }]);
-    } finally {
-      setChatLoading(false);
-    }
-  };
+  } catch (err) {
+    setMessages((prev) => [...prev, { from: "bot", text: "AI error." }]);
+  } finally {
+    setChatLoading(false);
+  }
+};
 
   const onChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
