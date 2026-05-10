@@ -203,7 +203,7 @@ export default function AdminDashboard() {
                   <XAxis dataKey="room" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="count" />
+                  <Bar dataKey= "count"fill="#ef4444" radius={[10, 10, 0, 0]}/>
                 </BarChart>
               </ResponsiveContainer>
             </div>
