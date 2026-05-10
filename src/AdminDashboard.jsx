@@ -186,7 +186,7 @@ export default function AdminDashboard() {
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="revenue" />
+                  <Bar dataKey="revenue" fill="#ef4444" radius={[10, 10, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
