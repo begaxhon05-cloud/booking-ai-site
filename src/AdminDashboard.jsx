@@ -222,8 +222,8 @@ export default function AdminDashboard() {
                     outerRadius={95}
                     label
                   >
-                    <Cell />
-                    <Cell />
+                    <Cell key="confirmed" fill="#7c3aed" />
+                    <Cell key="pending" fill="#a855f7" />
                   </Pie>
                   <Tooltip />
                 </PieChart>
