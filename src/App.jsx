@@ -2,25 +2,29 @@ import { useEffect, useState } from "react";
 import emailjs from "@emailjs/browser";
 import { propertyInfo } from "./propertyInfo";
 import AdminDashboard from "./AdminDashboard";
-import "./App.css";
 import AdminLogin from "./AdminLogin";
+import "./App.css";
 
 export default function App() {
-
   if (window.location.pathname === "/admin/login") {
-  return <AdminLogin />;
-}
-
-if (window.location.pathname === "/admin") {
-  const isLoggedIn = localStorage.getItem("admin_logged_in");
-
-  if (isLoggedIn !== "true") {
-    window.location.href = "/admin/login";
-    return null;
+    return <AdminLogin />;
   }
 
-  return <AdminDashboard />;
+  if (window.location.pathname === "/admin") {
+    const isLoggedIn = localStorage.getItem("admin_logged_in");
+
+    if (isLoggedIn !== "true") {
+      window.location.href = "/admin/login";
+      return null;
+    }
+
+    return <AdminDashboard />;
+  }
+
+  return <MainWebsite />;
 }
+
+function MainWebsite() {
   const [step, setStep] = useState(1);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,9 +37,13 @@ if (window.location.pathname === "/admin") {
       text: `Hi! I am the AI assistant for ${propertyInfo.name}. Ask me anything or request a booking.`,
     },
   ]);
+
   const [question, setQuestion] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [pendingBooking, setPendingBooking] = useState(null);
+
+  const [isListening, setIsListening] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
 
   const rooms = [
     "Room 101",
@@ -56,7 +64,10 @@ if (window.location.pathname === "/admin") {
 
   const pricePerNight = 50;
   const serviceFee = 10;
-  const calculateTotal = (nights) => Number(nights) * pricePerNight + serviceFee;
+
+  const calculateTotal = (nights) =>
+    Number(nights) * pricePerNight + serviceFee;
+
   const totalPrice = calculateTotal(form.nights);
 
   const GOOGLE_SCRIPT_URL =
@@ -76,87 +87,130 @@ if (window.location.pathname === "/admin") {
 
   const isRoomBooked = bookedDates?.[form.room]?.includes(form.checkin);
 
-  const submitBooking = async (booking) => {
-  if (isUnavailable(booking)) {
-    alert("This room is already booked for this date.");
-    return;
-  }
+  const speakText = (text) => {
+    if (!voiceEnabled || !text) return;
 
-  setLoading(true);
+    if (!window.speechSynthesis) return;
 
-  try {
-    // 1. Ruaj në Supabase / Dashboard
-    const supabaseRes = await fetch("/api/create-booking", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        room: booking.room,
-        checkin: booking.checkin,
-        nights: Number(booking.nights),
-        guests: Number(booking.guests),
-        name: booking.name,
-        email: booking.email,
-        source: "website_ai",
-      }),
-    });
+    window.speechSynthesis.cancel();
 
-    const supabaseData = await supabaseRes.json();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "sq-AL";
+    utterance.rate = 0.95;
+    utterance.pitch = 1;
 
-    if (!supabaseData.success) {
-      throw new Error(supabaseData.error || "Supabase booking failed");
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const startVoiceInput = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Voice recognition is not supported in this browser. Use Chrome.");
+      return;
     }
 
-    const total = calculateTotal(booking.nights);
+    const recognition = new SpeechRecognition();
+    recognition.lang = "sq-AL";
+    recognition.interimResults = false;
+    recognition.continuous = false;
 
-    // 2. Ruaj në Google Sheets + WhatsApp ekzistues
-    const params = new URLSearchParams({
-      name: booking.name,
-      email: booking.email,
-      checkin: booking.checkin,
-      nights: String(booking.nights),
-      guests: String(booking.guests),
-      room: booking.room,
-    });
+    setIsListening(true);
+    recognition.start();
 
-    await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setQuestion(transcript);
+      setIsListening(false);
+    };
 
-    // 3. Email klientit
-    const clientEmail = emailjs.send(
-      "service.booking",
-      "template_vt1z08k",
-      {
-        ...booking,
-        to_email: booking.email,
-        owner_email: "begaxhon05@gmail.com",
-        total,
-      },
-      "ezj-MNGM2H6cjtxg5"
-    );
+    recognition.onerror = () => {
+      setIsListening(false);
+      alert("Voice recognition failed. Please try again.");
+    };
 
-    // 4. Email pronarit
-    const ownerEmail = emailjs.send(
-      "service.booking",
-      "template_vt1z08k",
-      {
-        ...booking,
-        to_email: "begaxhon05@gmail.com",
-        owner_email: "begaxhon05@gmail.com",
-        total,
-      },
-      "ezj-MNGM2H6cjtxg5"
-    );
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+  };
 
-    // 5. WhatsApp pronarit
-    const ownerWhatsApp = fetch("/api/send-whatsapp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        to: "+355685090050",
-        message: `✅ New booking confirmed
+  const submitBooking = async (booking) => {
+    if (isUnavailable(booking)) {
+      alert("This room is already booked for this date.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const supabaseRes = await fetch("/api/create-booking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          room: booking.room,
+          checkin: booking.checkin,
+          nights: Number(booking.nights),
+          guests: Number(booking.guests),
+          name: booking.name,
+          email: booking.email,
+          source: "website_ai",
+        }),
+      });
+
+      const supabaseData = await supabaseRes.json();
+
+      if (!supabaseData.success) {
+        throw new Error(supabaseData.error || "Supabase booking failed");
+      }
+
+      const total = calculateTotal(booking.nights);
+
+      const params = new URLSearchParams({
+        name: booking.name,
+        email: booking.email,
+        checkin: booking.checkin,
+        nights: String(booking.nights),
+        guests: String(booking.guests),
+        room: booking.room,
+      });
+
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
+
+      const clientEmail = emailjs.send(
+        "service.booking",
+        "template_vt1z08k",
+        {
+          ...booking,
+          to_email: booking.email,
+          owner_email: "begaxhon05@gmail.com",
+          total,
+        },
+        "ezj-MNGM2H6cjtxg5"
+      );
+
+      const ownerEmail = emailjs.send(
+        "service.booking",
+        "template_vt1z08k",
+        {
+          ...booking,
+          to_email: "begaxhon05@gmail.com",
+          owner_email: "begaxhon05@gmail.com",
+          total,
+        },
+        "ezj-MNGM2H6cjtxg5"
+      );
+
+      const ownerWhatsApp = fetch("/api/send-whatsapp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: "+355685090050",
+          message: `✅ New booking confirmed
 
 Customer: ${booking.name}
 Email: ${booking.email}
@@ -165,125 +219,149 @@ Check-in: ${booking.checkin}
 Nights: ${booking.nights}
 Guests: ${booking.guests}
 Total: €${total}`,
-      }),
-    });
+        }),
+      });
 
-    await Promise.allSettled([clientEmail, ownerEmail, ownerWhatsApp]);
+      await Promise.allSettled([clientEmail, ownerEmail, ownerWhatsApp]);
 
-    setBookedDates((prev) => ({
-      ...prev,
-      [booking.room]: [...(prev[booking.room] || []), booking.checkin],
-    }));
+      setBookedDates((prev) => ({
+        ...prev,
+        [booking.room]: [...(prev[booking.room] || []), booking.checkin],
+      }));
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        from: "bot",
-        text: "✅ Rezervimi u konfirmua me sukses. U ruajt në dashboard dhe konfirmimi u dërgua me email.",
-      },
-    ]);
+      const successMessage =
+        "✅ Rezervimi u konfirmua me sukses. U ruajt në dashboard dhe konfirmimi u dërgua me email.";
 
-    setPendingBooking(null);
-    setSent(true);
-  } catch (err) {
-    console.error(err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "bot",
+          text: successMessage,
+        },
+      ]);
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        from: "bot",
-        text: `❌ Booking failed: ${err.message}`,
-      },
-    ]);
+      speakText(successMessage);
 
-    alert(`Booking failed: ${err.message}`);
-  } finally {
-    setLoading(false);
-  }
-};
+      setPendingBooking(null);
+      setSent(true);
+    } catch (err) {
+      console.error(err);
+
+      const errorMessage = `❌ Booking failed: ${err.message}`;
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "bot",
+          text: errorMessage,
+        },
+      ]);
+
+      speakText(errorMessage);
+      alert(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const sendMessage = async () => {
-  if (!question.trim() || chatLoading || loading) return;
+    if (!question.trim() || chatLoading || loading) return;
 
-  const userQuestion = question.trim();
-  const normalized = userQuestion.toLowerCase();
+    const userQuestion = question.trim();
+    const normalized = userQuestion.toLowerCase();
+    const userMsg = { from: "user", text: userQuestion };
 
-  const userMsg = { from: "user", text: userQuestion };
+    const confirmWords = [
+      "po",
+      "yes",
+      "confirm",
+      "konfirmoj",
+      "ok",
+      "okay",
+      "dakord",
+      "sigurisht",
+      "of course",
+      "po e konfirmoj",
+      "e konfirmoj",
+      "confirm booking",
+      "yes please",
+      "sure",
+      "perfect",
+      "perfekt",
+    ];
 
-  const confirmWords = [
-    "po",
-    "yes",
-    "confirm",
-    "konfirmoj",
-    "ok",
-    "okay",
-    "dakord",
-    "sigurisht",
-    "of course",
-    "po e konfirmoj",
-    "e konfirmoj",
-    "confirm booking",
-    "yes please",
-    "sure",
-    "perfect",
-    "perfekt",
-  ];
+    const isConfirm =
+      pendingBooking &&
+      confirmWords.some((word) => normalized.includes(word));
 
-  const isConfirm =
-    pendingBooking &&
-    confirmWords.some((word) => normalized.includes(word));
+    setMessages((prev) => [...prev, userMsg]);
+    setQuestion("");
 
-  setMessages((prev) => [...prev, userMsg]);
-  setQuestion("");
+    if (isConfirm) {
+      const confirmingText = "Po e konfirmoj rezervimin tani...";
 
-  if (isConfirm) {
-    setMessages((prev) => [
-      ...prev,
-      {
-        from: "bot",
-        text: "Po e konfirmoj rezervimin tani...",
-      },
-    ]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "bot",
+          text: confirmingText,
+        },
+      ]);
 
-    await submitBooking(pendingBooking);
-    return;
-  }
-
-  setChatLoading(true);
-
-  try {
-    const aiMessages = [...messages, userMsg].map((m) => ({
-      role: m.from === "user" ? "user" : "assistant",
-      content: m.text,
-    }));
-
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages: aiMessages,
-      }),
-    });
-
-    const data = await res.json();
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        from: "bot",
-        text: data.reply || "I could not generate a response.",
-      },
-    ]);
-
-    if (data.bookingReady && data.booking) {
-      setPendingBooking(data.booking);
+      speakText(confirmingText);
+      await submitBooking(pendingBooking);
+      return;
     }
-  } catch (err) {
-    setMessages((prev) => [...prev, { from: "bot", text: "AI error." }]);
-  } finally {
-    setChatLoading(false);
-  }
-};
+
+    setChatLoading(true);
+
+    try {
+      const aiMessages = [...messages, userMsg].map((m) => ({
+        role: m.from === "user" ? "user" : "assistant",
+        content: m.text,
+      }));
+
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: aiMessages,
+        }),
+      });
+
+      const data = await res.json();
+
+      const botReply = data.reply || "I could not generate a response.";
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "bot",
+          text: botReply,
+        },
+      ]);
+
+      speakText(botReply);
+
+      if (data.bookingReady && data.booking) {
+        setPendingBooking(data.booking);
+      }
+    } catch (err) {
+      const errorMessage = "AI error. Please try again.";
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: "bot",
+          text: errorMessage,
+        },
+      ]);
+
+      speakText(errorMessage);
+    } finally {
+      setChatLoading(false);
+    }
+  };
 
   const onChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -294,6 +372,7 @@ Total: €${total}`,
       alert("This room is already booked for this date.");
       return;
     }
+
     setStep((prev) => prev + 1);
   };
 
@@ -335,10 +414,13 @@ Total: €${total}`,
           <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-green-500 flex items-center justify-center text-3xl font-bold">
             ✓
           </div>
+
           <h1 className="text-3xl font-bold mb-3">Booking Sent</h1>
+
           <p className="text-slate-300 mb-6">
             Your booking request was sent successfully.
           </p>
+
           <button
             onClick={resetForm}
             className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-semibold py-3 rounded-2xl transition"
@@ -360,6 +442,10 @@ Total: €${total}`,
           submitBooking={submitBooking}
           isUnavailable={isUnavailable}
           calculateTotal={calculateTotal}
+          isListening={isListening}
+          startVoiceInput={startVoiceInput}
+          voiceEnabled={voiceEnabled}
+          setVoiceEnabled={setVoiceEnabled}
         />
       </div>
     );
@@ -373,6 +459,7 @@ Total: €${total}`,
             <div className="h-12 w-12 rounded-2xl bg-yellow-400/10 border border-yellow-400/50 flex items-center justify-center text-yellow-400 font-bold">
               ⌘
             </div>
+
             <div className="text-2xl font-bold">
               Booking<span className="text-yellow-400">AI</span>
             </div>
@@ -436,26 +523,6 @@ Total: €${total}`,
                 ▶ Si funksionon
               </button>
             </div>
-
-            <div className="flex items-center gap-5">
-              <div className="flex -space-x-3">
-                {["A", "B", "C", "D"].map((x) => (
-                  <div
-                    key={x}
-                    className="h-12 w-12 rounded-full bg-slate-200 text-slate-900 border-2 border-[#050914] flex items-center justify-center font-bold"
-                  >
-                    {x}
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <p className="text-yellow-400 text-xl">★★★★★</p>
-                <p className="text-slate-400">
-                  Besohet nga mbi 150+ prona në Shqipëri
-                </p>
-              </div>
-            </div>
           </div>
 
           <div className="rounded-[2rem] border border-white/10 bg-[#0b1324] shadow-2xl overflow-hidden">
@@ -484,7 +551,7 @@ Total: €${total}`,
                   </div>
 
                   <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                    <p className="text-slate-400 text-sm">Klientë të rinj</p>
+                    <p className="text-slate-400 text-sm">Klientë</p>
                     <p className="text-4xl font-bold mt-3">18</p>
                     <p className="text-green-400 text-sm mt-2">+8%</p>
                   </div>
@@ -493,7 +560,7 @@ Total: €${total}`,
                 <div className="mt-8 bg-white/5 border border-white/10 rounded-2xl p-5">
                   <p className="text-slate-400 text-sm">Automations aktive</p>
                   <p className="mt-3 text-sm text-slate-300">
-                    WhatsApp AI • Email • Google Sheets • Room Availability
+                    WhatsApp AI • Email • Supabase • Room Availability • Voice
                   </p>
                 </div>
               </div>
@@ -513,8 +580,8 @@ Total: €${total}`,
                 text: "Përgjigjet në shqip, anglisht, italisht, gjermanisht dhe spanjisht.",
               },
               {
-                title: "Rezervime automatike",
-                text: "Klienti konfirmon dhe sistemi ruan rezervimin automatikisht.",
+                title: "Voice Assistant",
+                text: "Klienti mund të flasë me zë dhe AI përgjigjet me zë.",
               },
               {
                 title: "WhatsApp + Email",
@@ -528,7 +595,9 @@ Total: €${total}`,
                 <div className="h-12 w-12 rounded-2xl bg-yellow-400/10 text-yellow-400 flex items-center justify-center mb-5">
                   ✦
                 </div>
+
                 <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+
                 <p className="text-slate-400 leading-relaxed">{item.text}</p>
               </div>
             ))}
@@ -555,6 +624,7 @@ Total: €${total}`,
                   <p className="text-yellow-400 text-3xl font-black mb-4">
                     0{index + 1}
                   </p>
+
                   <p className="text-slate-300">{stepText}</p>
                 </div>
               ))}
@@ -566,19 +636,22 @@ Total: €${total}`,
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div>
               <p className="text-yellow-400 font-bold mb-3">LIVE DEMO</p>
+
               <h2 className="text-4xl md:text-5xl font-black mb-6">
                 Provoje sistemin real tani.
               </h2>
+
               <p className="text-slate-300 text-lg leading-relaxed mb-6">
                 Mund të përdorësh formën klasike ose chatbot-in poshtë djathtas.
-                AI mund të kontrollojë disponueshmërinë, të mbledhë të dhënat
-                dhe të krijojë rezervim pas konfirmimit.
+                AI mund të kontrollojë disponueshmërinë, të mbledhë të dhënat,
+                të flasë me zë dhe të krijojë rezervim pas konfirmimit.
               </p>
 
               <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-slate-300">
                 <p className="font-bold text-white mb-2">Shembull për chat:</p>
+
                 <p>
-                  Dua Room 101 me date 2026-06-28 per 2 nete per 2 persona.
+                  Dua Room 101 me date 2026-08-10 per 2 nete per 2 persona.
                   Emri Xhon Bega, email test@test.com
                 </p>
               </div>
@@ -588,6 +661,7 @@ Total: €${total}`,
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-2xl font-bold">Booking Request</h2>
+
                   <span className="text-sm font-semibold text-slate-500">
                     Step {step}/4
                   </span>
@@ -615,6 +689,7 @@ Total: €${total}`,
                       <label className="block text-sm font-semibold mb-2">
                         Room
                       </label>
+
                       <select
                         name="room"
                         value={form.room}
@@ -634,6 +709,7 @@ Total: €${total}`,
                       <label className="block text-sm font-semibold mb-2">
                         Check-in
                       </label>
+
                       <input
                         type="date"
                         name="checkin"
@@ -656,6 +732,7 @@ Total: €${total}`,
                       <label className="block text-sm font-semibold mb-2">
                         Nights
                       </label>
+
                       <input
                         type="number"
                         name="nights"
@@ -686,6 +763,7 @@ Total: €${total}`,
                       <label className="block text-sm font-semibold mb-2">
                         Guests
                       </label>
+
                       <input
                         type="number"
                         name="guests"
@@ -725,6 +803,7 @@ Total: €${total}`,
                       <label className="block text-sm font-semibold mb-2">
                         Name
                       </label>
+
                       <input
                         type="text"
                         name="name"
@@ -739,6 +818,7 @@ Total: €${total}`,
                       <label className="block text-sm font-semibold mb-2">
                         Email
                       </label>
+
                       <input
                         type="email"
                         name="email"
@@ -794,6 +874,7 @@ Total: €${total}`,
                           <span className="text-slate-500">
                             €{pricePerNight} x {form.nights} nights
                           </span>
+
                           <span className="font-semibold">
                             €{Number(form.nights) * pricePerNight}
                           </span>
@@ -806,6 +887,7 @@ Total: €${total}`,
 
                         <div className="flex justify-between mt-3 text-lg">
                           <span className="font-bold">Total</span>
+
                           <span className="font-bold text-green-600">
                             €{totalPrice}
                           </span>
@@ -843,8 +925,10 @@ Total: €${total}`,
               <h2 className="text-4xl font-black mb-3">
                 Gati ta automatizosh pronën tënde?
               </h2>
+
               <p className="text-lg">
-                BookingAI mund të përshtatet për çdo hotel, Airbnb ose apartament.
+                BookingAI mund të përshtatet për çdo hotel, Airbnb ose
+                apartament.
               </p>
             </div>
 
@@ -871,6 +955,10 @@ Total: €${total}`,
         submitBooking={submitBooking}
         isUnavailable={isUnavailable}
         calculateTotal={calculateTotal}
+        isListening={isListening}
+        startVoiceInput={startVoiceInput}
+        voiceEnabled={voiceEnabled}
+        setVoiceEnabled={setVoiceEnabled}
       />
     </div>
   );
@@ -889,14 +977,32 @@ function ChatWidget({
   submitBooking,
   isUnavailable,
   calculateTotal,
+  isListening,
+  startVoiceInput,
+  voiceEnabled,
+  setVoiceEnabled,
 }) {
   return (
     <div className="fixed bottom-5 right-5 z-50">
       {chatOpen && (
-        <div className="mb-4 w-[360px] rounded-3xl bg-white text-slate-900 shadow-2xl border border-slate-200 overflow-hidden">
-          <div className="bg-slate-900 text-white px-5 py-4">
-            <h3 className="font-bold">AI Assistant</h3>
-            <p className="text-xs text-slate-300">Villa Aurora Demo</p>
+        <div className="mb-4 w-[370px] rounded-3xl bg-white text-slate-900 shadow-2xl border border-slate-200 overflow-hidden">
+          <div className="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
+            <div>
+              <h3 className="font-bold">AI Assistant</h3>
+              <p className="text-xs text-slate-300">Villa Aurora Demo</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setVoiceEnabled((prev) => !prev)}
+              className={`text-xs px-3 py-1 rounded-full font-semibold ${
+                voiceEnabled
+                  ? "bg-green-500 text-white"
+                  : "bg-white/10 text-slate-300"
+              }`}
+            >
+              {voiceEnabled ? "Voice ON" : "Voice OFF"}
+            </button>
           </div>
 
           <div className="h-80 overflow-y-auto p-4 space-y-3 bg-slate-50">
@@ -954,7 +1060,7 @@ function ChatWidget({
             )}
           </div>
 
-          <div className="p-3 border-t border-slate-200 flex gap-2">
+          <div className="p-3 border-t border-slate-200 flex gap-2 items-center">
             <input
               value={question}
               disabled={chatLoading || loading}
@@ -969,8 +1075,37 @@ function ChatWidget({
             <button
               type="button"
               disabled={chatLoading || loading}
+              onClick={startVoiceInput}
+              className={`h-11 w-11 rounded-full flex items-center justify-center transition ${
+                isListening
+                  ? "bg-red-500 text-white animate-pulse"
+                  : "bg-green-500 hover:bg-green-600 text-white"
+              }`}
+              title="Voice message"
+            >
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 14.5C13.66 14.5 15 13.16 15 11.5V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11.5C9 13.16 10.34 14.5 12 14.5Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M17.3 10.5C17.3 13.43 15.03 15.8 12 15.8C8.97 15.8 6.7 13.43 6.7 10.5H5C5 14.02 7.61 16.93 11.15 17.35V21H12.85V17.35C16.39 16.93 19 14.02 19 10.5H17.3Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              disabled={chatLoading || loading}
               onClick={sendMessage}
-              className="bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white rounded-2xl px-4 text-sm font-semibold"
+              className="bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white rounded-2xl px-4 py-2 text-sm font-semibold"
             >
               {chatLoading || loading ? "..." : "Send"}
             </button>
