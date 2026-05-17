@@ -88,19 +88,36 @@ function MainWebsite() {
   const isRoomBooked = bookedDates?.[form.room]?.includes(form.checkin);
 
   const speakText = (text) => {
-    if (!voiceEnabled || !text) return;
+  if (!voiceEnabled || !text) return;
+  if (!window.speechSynthesis) return;
 
-    if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
 
-    window.speechSynthesis.cancel();
+  const cleanText = text
+    .replace(/✅|❌|🎤|🎙️|🔥|🚀/g, "")
+    .replace(/\n/g, ". ");
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "sq-AL";
-    utterance.rate = 0.95;
-    utterance.pitch = 1;
+  const utterance = new SpeechSynthesisUtterance(cleanText);
 
-    window.speechSynthesis.speak(utterance);
-  };
+  const voices = window.speechSynthesis.getVoices();
+
+  const preferredVoice =
+    voices.find((voice) => voice.lang === "sq-AL") ||
+    voices.find((voice) => voice.lang.startsWith("it")) ||
+    voices.find((voice) => voice.lang.startsWith("en")) ||
+    voices[0];
+
+  if (preferredVoice) {
+    utterance.voice = preferredVoice;
+  }
+
+  utterance.lang = preferredVoice?.lang || "en-US";
+  utterance.rate = 0.9;
+  utterance.pitch = 1.05;
+  utterance.volume = 1;
+
+  window.speechSynthesis.speak(utterance);
+};
 
   const startVoiceInput = () => {
     const SpeechRecognition =
@@ -120,10 +137,14 @@ function MainWebsite() {
     recognition.start();
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setQuestion(transcript);
-      setIsListening(false);
-    };
+  const transcript = event.results[0][0].transcript;
+  setQuestion(transcript);
+  setIsListening(false);
+
+  setTimeout(() => {
+    sendMessage(transcript);
+  }, 300);
+};
 
     recognition.onerror = () => {
       setIsListening(false);
@@ -264,104 +285,106 @@ Total: €${total}`,
     }
   };
 
-  const sendMessage = async () => {
-    if (!question.trim() || chatLoading || loading) return;
+  const sendMessage = async (voiceText = null) => {
+  const finalQuestion = voiceText || question;
 
-    const userQuestion = question.trim();
-    const normalized = userQuestion.toLowerCase();
-    const userMsg = { from: "user", text: userQuestion };
+  if (!finalQuestion.trim() || chatLoading || loading) return;
 
-    const confirmWords = [
-      "po",
-      "yes",
-      "confirm",
-      "konfirmoj",
-      "ok",
-      "okay",
-      "dakord",
-      "sigurisht",
-      "of course",
-      "po e konfirmoj",
-      "e konfirmoj",
-      "confirm booking",
-      "yes please",
-      "sure",
-      "perfect",
-      "perfekt",
-    ];
+  const userQuestion = finalQuestion.trim();
+  const normalized = userQuestion.toLowerCase();
+  const userMsg = { from: "user", text: userQuestion };
 
-    const isConfirm =
-      pendingBooking &&
-      confirmWords.some((word) => normalized.includes(word));
+  const confirmWords = [
+    "po",
+    "yes",
+    "confirm",
+    "konfirmoj",
+    "ok",
+    "okay",
+    "dakord",
+    "sigurisht",
+    "of course",
+    "po e konfirmoj",
+    "e konfirmoj",
+    "confirm booking",
+    "yes please",
+    "sure",
+    "perfect",
+    "perfekt",
+  ];
 
-    setMessages((prev) => [...prev, userMsg]);
-    setQuestion("");
+  const isConfirm =
+    pendingBooking &&
+    confirmWords.some((word) => normalized.includes(word));
 
-    if (isConfirm) {
-      const confirmingText = "Po e konfirmoj rezervimin tani...";
+  setMessages((prev) => [...prev, userMsg]);
+  setQuestion("");
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          from: "bot",
-          text: confirmingText,
-        },
-      ]);
+  if (isConfirm) {
+    const confirmingText = "Po e konfirmoj rezervimin tani...";
 
-      speakText(confirmingText);
-      await submitBooking(pendingBooking);
-      return;
+    setMessages((prev) => [
+      ...prev,
+      {
+        from: "bot",
+        text: confirmingText,
+      },
+    ]);
+
+    speakText(confirmingText);
+    await submitBooking(pendingBooking);
+    return;
+  }
+
+  setChatLoading(true);
+
+  try {
+    const aiMessages = [...messages, userMsg].map((m) => ({
+      role: m.from === "user" ? "user" : "assistant",
+      content: m.text,
+    }));
+
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: aiMessages,
+      }),
+    });
+
+    const data = await res.json();
+
+    const botReply = data.reply || "I could not generate a response.";
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        from: "bot",
+        text: botReply,
+      },
+    ]);
+
+    speakText(botReply);
+
+    if (data.bookingReady && data.booking) {
+      setPendingBooking(data.booking);
     }
+  } catch (err) {
+    const errorMessage = "AI error. Please try again.";
 
-    setChatLoading(true);
+    setMessages((prev) => [
+      ...prev,
+      {
+        from: "bot",
+        text: errorMessage,
+      },
+    ]);
 
-    try {
-      const aiMessages = [...messages, userMsg].map((m) => ({
-        role: m.from === "user" ? "user" : "assistant",
-        content: m.text,
-      }));
-
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: aiMessages,
-        }),
-      });
-
-      const data = await res.json();
-
-      const botReply = data.reply || "I could not generate a response.";
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          from: "bot",
-          text: botReply,
-        },
-      ]);
-
-      speakText(botReply);
-
-      if (data.bookingReady && data.booking) {
-        setPendingBooking(data.booking);
-      }
-    } catch (err) {
-      const errorMessage = "AI error. Please try again.";
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          from: "bot",
-          text: errorMessage,
-        },
-      ]);
-
-      speakText(errorMessage);
-    } finally {
-      setChatLoading(false);
-    }
-  };
+    speakText(errorMessage);
+  } finally {
+    setChatLoading(false);
+  }
+};
 
   const onChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
