@@ -1,42 +1,54 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({
-      success: false,
-      error: "Method not allowed",
-    });
+    return res.status(405).json({ success: false, error: "Method not allowed" });
   }
 
   try {
     const { text } = req.body;
 
     if (!text) {
-      return res.status(400).json({
+      return res.status(400).json({ success: false, error: "Missing text" });
+    }
+
+    const apiKey = process.env.ELEVENLABS_API_KEY;
+    const voiceId = process.env.ELEVENLABS_VOICE_ID || "JBFqnCBsd6RMkjVDRZzb";
+
+    if (!apiKey) {
+      return res.status(500).json({
         success: false,
-        error: "Missing text",
+        error: "Missing ELEVENLABS_API_KEY",
       });
     }
 
-    const response = await fetch("https://api.openai.com/v1/audio/speech", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini-tts",
-        voice: "alloy",
-        input: text.slice(0, 1200),
-        response_format: "mp3",
-      }),
-    });
+    const cleanText = String(text)
+      .replace(/✅|❌|🎤|🎙️|🔥|🚀/g, "")
+      .replace(/\n/g, ". ")
+      .slice(0, 1800);
+
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`,
+      {
+        method: "POST",
+        headers: {
+          "xi-api-key": apiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: cleanText,
+          model_id: "eleven_multilingual_v2",
+          voice_settings: {
+            stability: 0.45,
+            similarity_boost: 0.8,
+            style: 0.25,
+            use_speaker_boost: true,
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
-
-      return res.status(500).json({
-        success: false,
-        error: errorText,
-      });
+      return res.status(500).json({ success: false, error: errorText });
     }
 
     const audioBuffer = await response.arrayBuffer();
@@ -48,7 +60,7 @@ export default async function handler(req, res) {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message || "TTS server error",
+      error: error.message || "ElevenLabs TTS error",
     });
   }
 }
