@@ -87,36 +87,38 @@ function MainWebsite() {
 
   const isRoomBooked = bookedDates?.[form.room]?.includes(form.checkin);
 
-  const speakText = (text) => {
+  const speakText = async (text) => {
   if (!voiceEnabled || !text) return;
-  if (!window.speechSynthesis) return;
 
-  window.speechSynthesis.cancel();
+  try {
+    const cleanText = text
+      .replace(/✅|❌|🎤|🎙️|🔥|🚀/g, "")
+      .replace(/\n/g, ". ")
+      .slice(0, 1200);
 
-  const cleanText = text
-    .replace(/✅|❌|🎤|🎙️|🔥|🚀/g, "")
-    .replace(/\n/g, ". ");
+    const response = await fetch("/api/tts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: cleanText }),
+    });
 
-  const utterance = new SpeechSynthesisUtterance(cleanText);
+    if (!response.ok) {
+      console.error("TTS failed");
+      return;
+    }
 
-  const voices = window.speechSynthesis.getVoices();
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
 
-  const preferredVoice =
-    voices.find((voice) => voice.lang === "sq-AL") ||
-    voices.find((voice) => voice.lang.startsWith("it")) ||
-    voices.find((voice) => voice.lang.startsWith("en")) ||
-    voices[0];
+    audio.onended = () => URL.revokeObjectURL(audioUrl);
 
-  if (preferredVoice) {
-    utterance.voice = preferredVoice;
+    await audio.play();
+  } catch (error) {
+    console.error("Voice playback error:", error);
   }
-
-  utterance.lang = preferredVoice?.lang || "en-US";
-  utterance.rate = 0.9;
-  utterance.pitch = 1.05;
-  utterance.volume = 1;
-
-  window.speechSynthesis.speak(utterance);
 };
 
   const startVoiceInput = () => {
