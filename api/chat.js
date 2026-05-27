@@ -9,6 +9,8 @@ export default async function handler(req, res) {
 
   try {
     const { messages = [] } = req.body;
+    const hotelSlug = req.body.hotel_slug || "villa-aurora-demo";
+const hotel = await getHotelFromSupabase(hotelSlug);
 
     const normalizedMessages = normalizeMessages(messages);
     const lastUserMessage =
@@ -104,7 +106,7 @@ export default async function handler(req, res) {
       lastText.includes("mengjes") ||
       lastText.includes("pije")
     ) {
-      const menuAnswer = await getSpecificKnowledgeFromSupabase("menu");
+      const menuAnswer = await getSpecificKnowledgeFromSupabase("menu", hotel.id);
 
       if (menuAnswer) {
         return res.status(200).json({
@@ -115,7 +117,7 @@ export default async function handler(req, res) {
       }
     }
 
-    const knowledgeText = await getKnowledgeFromSupabase();
+    const knowledgeText = await getKnowledgeFromSupabase(hotel.id);
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -355,15 +357,38 @@ async function getRoom(roomName, supabaseUrl, serviceKey) {
   const rooms = await roomRes.json();
   return rooms?.[0] || null;
 }
-
-async function getKnowledgeFromSupabase() {
+async function getHotelFromSupabase(slug) {
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl || !serviceKey) return "";
+  if (!supabaseUrl || !serviceKey) {
+    return { id: null, hotel_name: "Villa Aurora Demo" };
+  }
 
   const response = await fetch(
-    `${supabaseUrl}/rest/v1/hotel_knowledge?select=question,answer`,
+    `${supabaseUrl}/rest/v1/hotel_accounts?select=id,hotel_name&slug=eq.${encodeURIComponent(
+      slug
+    )}&is_active=eq.true&limit=1`,
+    {
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  return data?.[0] || { id: null, hotel_name: "Villa Aurora Demo" };
+}
+async function getKnowledgeFromSupabase(hotelId) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceKey || !hotelId) return "";
+
+  const response = await fetch(
+    `${supabaseUrl}/rest/v1/hotel_knowledge?select=question,answer&hotel_id=eq.${hotelId}`,
     {
       headers: {
         apikey: serviceKey,
@@ -381,14 +406,14 @@ async function getKnowledgeFromSupabase() {
     .join("\n\n");
 }
 
-async function getSpecificKnowledgeFromSupabase(keyword) {
+async function getSpecificKnowledgeFromSupabase(keyword, hotelId) {
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl || !serviceKey) return "";
+  if (!supabaseUrl || !serviceKey || !hotelId) return "";
 
   const response = await fetch(
-    `${supabaseUrl}/rest/v1/hotel_knowledge?select=question,answer`,
+    `${supabaseUrl}/rest/v1/hotel_knowledge?select=question,answer&hotel_id=eq.${hotelId}`,
     {
       headers: {
         apikey: serviceKey,
