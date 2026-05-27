@@ -29,12 +29,13 @@ function MainWebsite() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bookedDates, setBookedDates] = useState({});
+  const [hotel, setHotel] = useState(null);
 
   const [chatOpen, setChatOpen] = useState(true);
   const [messages, setMessages] = useState([
     {
       from: "bot",
-      text: `Hi! I am the AI assistant for ${propertyInfo.name}. Ask me anything or request a booking.`,
+      text: `Hi! I am the AI assistant for ${hotel?.hotel_name || "our hotel"}. Ask me anything or request a booking.`,
     },
   ]);
 
@@ -79,6 +80,16 @@ function MainWebsite() {
       .then((data) => setBookedDates(data))
       .catch((err) => console.error("Booked dates error:", err));
   }, []);
+  useEffect(() => {
+  fetch("/api/hotel?slug=villa-aurora-demo")
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        setHotel(data.hotel);
+      }
+    })
+    .catch(console.error);
+}, []);
 
   const isUnavailable = (booking) => {
     if (!booking?.room || !booking?.checkin) return false;
@@ -1014,7 +1025,7 @@ function ChatWidget({
           <div className="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
             <div>
               <h3 className="font-bold">AI Assistant</h3>
-              <p className="text-xs text-slate-300">Villa Aurora Demo</p>
+              <p className="text-xs text-slate-300">{hotel?.hotel_name || "Villa Aurora Demo"}</p>
             </div>
 
             <button
