@@ -482,6 +482,7 @@ Total: €${total}`,
           startVoiceInput={startVoiceInput}
           voiceEnabled={voiceEnabled}
           setVoiceEnabled={setVoiceEnabled}
+          hotel={hotel}
         />
       </div>
     );
@@ -1001,6 +1002,7 @@ Total: €${total}`,
 }
 
 function ChatWidget({
+  hotel,
   chatOpen,
   setChatOpen,
   messages,
