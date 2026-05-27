@@ -30,6 +30,8 @@ function MainWebsite() {
   const [loading, setLoading] = useState(false);
   const [bookedDates, setBookedDates] = useState({});
   const [hotel, setHotel] = useState(null);
+  const hotelSlug =
+  window.location.pathname.split("/").filter(Boolean)[0] || "villa-aurora-demo";
 
   const [chatOpen, setChatOpen] = useState(true);
   const [messages, setMessages] = useState([
@@ -81,7 +83,7 @@ function MainWebsite() {
       .catch((err) => console.error("Booked dates error:", err));
   }, []);
   useEffect(() => {
-  fetch("/api/hotel?slug=villa-aurora-demo")
+  fetch(`/api/hotel?slug=${hotelSlug}`)
     .then((res) => res.json())
     .then((data) => {
       if (data.success) {
@@ -190,6 +192,7 @@ function MainWebsite() {
           guests: Number(booking.guests),
           name: booking.name,
           email: booking.email,
+          hotel_slug: hotelSlug,
           source: "website_ai",
         }),
       });
@@ -361,8 +364,9 @@ Total: €${total}`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        messages: aiMessages,
-      }),
+  messages: aiMessages,
+  hotel_slug: hotelSlug,
+}),
     });
 
     const data = await res.json();
