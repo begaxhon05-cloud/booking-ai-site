@@ -321,7 +321,7 @@ Total: €${total}`,
         content: m.text,
       }));
 
-      const res = await fetch("/api/chat", {
+      const res = await fetch("/api/admin-bookings?slug=villa-aurora-demo"); {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
