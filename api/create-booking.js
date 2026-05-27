@@ -75,9 +75,9 @@ export default async function handler(req, res) {
     }
 
     const roomRes = await fetch(
-      `${supabaseUrl}/rest/v1/rooms?select=id,name,price_per_night&name=eq.${encodeURIComponent(
-        booking.room
-      )}&limit=1`,
+  `${supabaseUrl}/rest/v1/rooms?select=id,name,price_per_night&hotel_id=eq.${hotel.id}&name=eq.${encodeURIComponent(
+    booking.room
+  )}&limit=1`,
       {
         headers: {
           apikey: serviceKey,
