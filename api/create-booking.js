@@ -30,6 +30,30 @@ export default async function handler(req, res) {
       });
     }
 
+    const hotelSlug = booking.hotel_slug || "villa-aurora-demo";
+
+    const hotelRes = await fetch(
+      `${supabaseUrl}/rest/v1/hotel_accounts?select=id,hotel_name&slug=eq.${encodeURIComponent(
+        hotelSlug
+      )}&is_active=eq.true&limit=1`,
+      {
+        headers: {
+          apikey: serviceKey,
+          Authorization: `Bearer ${serviceKey}`,
+        },
+      }
+    );
+
+    const hotels = await hotelRes.json();
+    const hotel = hotels?.[0];
+
+    if (!hotel?.id) {
+      return res.status(500).json({
+        success: false,
+        error: "Hotel account not found",
+      });
+    }
+
     const propertyRes = await fetch(
       `${supabaseUrl}/rest/v1/properties?select=id&limit=1`,
       {
@@ -73,7 +97,7 @@ export default async function handler(req, res) {
     }
 
     const availabilityRes = await fetch(
-      `${supabaseUrl}/rest/v1/bookings?select=id&room_id=eq.${room.id}&checkin=eq.${booking.checkin}&status=eq.confirmed`,
+      `${supabaseUrl}/rest/v1/bookings?select=id&hotel_id=eq.${hotel.id}&room_id=eq.${room.id}&checkin=eq.${booking.checkin}&status=eq.confirmed`,
       {
         headers: {
           apikey: serviceKey,
@@ -128,6 +152,7 @@ export default async function handler(req, res) {
         Prefer: "return=representation",
       },
       body: JSON.stringify({
+        hotel_id: hotel.id,
         property_id: propertyId,
         room_id: room.id,
         customer_id: customer.id,
@@ -154,6 +179,7 @@ export default async function handler(req, res) {
       success: true,
       booking: createdBooking,
       total,
+      hotel,
     });
   } catch (error) {
     return res.status(500).json({
