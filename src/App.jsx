@@ -8,19 +8,23 @@ import "./App.css";
 export default function App() {
   const pathParts = window.location.pathname.split("/").filter(Boolean);
 
+  const isOldAdminLogin = pathParts[0] === "admin" && pathParts[1] === "login";
+  const isOldAdminDashboard = pathParts[0] === "admin";
+
   const hotelSlug =
-    pathParts[0] && pathParts[0] !== "admin"
-      ? pathParts[0]
-      : "villa-aurora-demo";
+    isOldAdminLogin || isOldAdminDashboard
+      ? "villa-aurora-demo"
+      : pathParts[0] || "villa-aurora-demo";
 
   const isAdminLogin =
-    pathParts.length === 3 &&
-    pathParts[1] === "admin" &&
-    pathParts[2] === "login";
+    isOldAdminLogin ||
+    (pathParts[0] === hotelSlug &&
+      pathParts[1] === "admin" &&
+      pathParts[2] === "login");
 
   const isAdminDashboard =
-    pathParts.length === 2 &&
-    pathParts[1] === "admin";
+    isOldAdminDashboard ||
+    (pathParts[0] === hotelSlug && pathParts[1] === "admin" && !pathParts[2]);
 
   if (isAdminLogin) {
     return <AdminLogin hotelSlug={hotelSlug} />;
