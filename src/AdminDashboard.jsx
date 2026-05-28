@@ -13,7 +13,7 @@ import {
   Cell,
 } from "recharts";
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ hotelSlug }) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -22,7 +22,7 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
 
-      const res = await fetch("/api/admin-bookings?slug=villa-aurora-demo");
+      const res = await fetch(`/api/admin-bookings?slug=${hotelSlug}`);
       const data = await res.json();
 
       if (data.success) {
@@ -143,8 +143,8 @@ export default function AdminDashboard() {
 
             <button
               onClick={() => {
-                localStorage.removeItem("admin_logged_in");
-                window.location.href = "/admin/login";
+                localStorage.removeItem(`admin_logged_in_${hotelSlug}`);
+window.location.href = `/${hotelSlug}/admin/login`;
               }}
               className="bg-red-500 text-white font-bold px-5 py-3 rounded-2xl"
             >

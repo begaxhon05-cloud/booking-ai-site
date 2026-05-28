@@ -6,11 +6,37 @@ import AdminLogin from "./AdminLogin";
 import "./App.css";
 
 export default function App() {
-  if (window.location.pathname === "/admin/login") {
-    return <AdminLogin />;
+  const pathParts = window.location.pathname
+  .split("/")
+  .filter(Boolean);
+
+const hotelSlug =
+  pathParts[0] && pathParts[0] !== "admin"
+    ? pathParts[0]
+    : "villa-aurora-demo";
+
+const isAdminLogin =
+  window.location.pathname === `/${hotelSlug}/admin/login`;
+
+const isAdminDashboard =
+  window.location.pathname === `/${hotelSlug}/admin`;
+
+if (isAdminLogin) {
+  return <AdminLogin hotelSlug={hotelSlug} />;
+}
+
+if (isAdminDashboard) {
+  const isLoggedIn = localStorage.getItem(
+    `admin_logged_in_${hotelSlug}`
+  );
+
+  if (isLoggedIn !== "true") {
+    window.location.href = `/${hotelSlug}/admin/login`;
+    return null;
   }
 
-  if (window.location.pathname === "/admin") {
+  return <AdminDashboard hotelSlug={hotelSlug} />;
+}
     const isLoggedIn = localStorage.getItem("admin_logged_in");
 
     if (isLoggedIn !== "true") {

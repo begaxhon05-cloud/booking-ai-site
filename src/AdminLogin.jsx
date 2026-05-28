@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function AdminLogin() {
+export default function AdminLogin({ hotelSlug }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -10,8 +10,8 @@ export default function AdminLogin() {
     e.preventDefault();
 
     if (password === ADMIN_PASSWORD) {
-      localStorage.setItem("admin_logged_in", "true");
-      window.location.href = "/admin";
+      localStorage.setItem(`admin_logged_in_${hotelSlug}`, "true");
+window.location.href = `/${hotelSlug}/admin`;
     } else {
       setError("Password incorrect.");
     }
