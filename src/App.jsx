@@ -6,45 +6,35 @@ import AdminLogin from "./AdminLogin";
 import "./App.css";
 
 export default function App() {
-  const pathParts = window.location.pathname
-  .split("/")
-  .filter(Boolean);
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
 
-const hotelSlug =
-  pathParts[0] && pathParts[0] !== "admin"
-    ? pathParts[0]
-    : "villa-aurora-demo";
+  const hotelSlug =
+    pathParts[0] && pathParts[0] !== "admin"
+      ? pathParts[0]
+      : "villa-aurora-demo";
 
-const isAdminLogin =
-  window.location.pathname === `/${hotelSlug}/admin/login`;
+  const isAdminLogin =
+    pathParts.length === 3 &&
+    pathParts[1] === "admin" &&
+    pathParts[2] === "login";
 
-const isAdminDashboard =
-  window.location.pathname === `/${hotelSlug}/admin`;
+  const isAdminDashboard =
+    pathParts.length === 2 &&
+    pathParts[1] === "admin";
 
-if (isAdminLogin) {
-  return <AdminLogin hotelSlug={hotelSlug} />;
-}
-
-if (isAdminDashboard) {
-  const isLoggedIn = localStorage.getItem(
-    `admin_logged_in_${hotelSlug}`
-  );
-
-  if (isLoggedIn !== "true") {
-    window.location.href = `/${hotelSlug}/admin/login`;
-    return null;
+  if (isAdminLogin) {
+    return <AdminLogin hotelSlug={hotelSlug} />;
   }
 
-  return <AdminDashboard hotelSlug={hotelSlug} />;
-}
-    const isLoggedIn = localStorage.getItem("admin_logged_in");
+  if (isAdminDashboard) {
+    const isLoggedIn = localStorage.getItem(`admin_logged_in_${hotelSlug}`);
 
     if (isLoggedIn !== "true") {
-      window.location.href = "/admin/login";
+      window.location.href = `/${hotelSlug}/admin/login`;
       return null;
     }
 
-    return <AdminDashboard />;
+    return <AdminDashboard hotelSlug={hotelSlug} />;
   }
 
   return <MainWebsite />;
