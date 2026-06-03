@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import RoomsManager from "./components/RoomsManager";
+import KnowledgeManager from "./components/KnowledgeManager";
 import {
   BarChart,
   Bar,
@@ -243,6 +244,7 @@ export default function AdminDashboard({ hotelSlug }) {
           </button>
         </div>
         <RoomsManager hotelSlug={hotelSlug} />
+        <KnowledgeManager hotelSlug={hotelSlug} />
 
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
           <div className="bg-white text-slate-900 rounded-3xl p-6 shadow-2xl">
