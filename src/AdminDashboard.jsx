@@ -15,13 +15,25 @@ import {
 
 export default function AdminDashboard({ hotelSlug }) {
   const [bookings, setBookings] = useState([]);
+  const [hotel, setHotel] = useState(null);
+  const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
+  const [savingSettings, setSavingSettings] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const fetchHotel = async () => {
+    const res = await fetch(`/api/hotel?slug=${hotelSlug}`);
+    const data = await res.json();
+
+    if (data.success) {
+      setHotel(data.hotel);
+      setSettings(data.hotel);
+    }
+  };
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
-
       const res = await fetch(`/api/admin-bookings?slug=${hotelSlug}`);
       const data = await res.json();
 
@@ -32,6 +44,47 @@ export default function AdminDashboard({ hotelSlug }) {
       console.error("Admin bookings error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const saveSettings = async () => {
+    try {
+      setSavingSettings(true);
+
+      const res = await fetch("/api/update-hotel", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          slug: hotelSlug,
+          hotel_name: settings.hotel_name,
+          owner_name: settings.owner_name,
+          owner_email: settings.owner_email,
+          owner_phone: settings.owner_phone,
+          location: settings.location,
+          address: settings.address,
+          primary_color: settings.primary_color,
+          whatsapp_number: settings.whatsapp_number,
+          logo_url: settings.logo_url,
+          cover_image_url: settings.cover_image_url,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        alert(data.error || "Settings update failed");
+        return;
+      }
+
+      setHotel(data.hotel);
+      setSettings(data.hotel);
+      alert("Settings saved successfully.");
+    } catch (error) {
+      alert("Settings save failed.");
+    } finally {
+      setSavingSettings(false);
     }
   };
 
@@ -65,16 +118,12 @@ export default function AdminDashboard({ hotelSlug }) {
   };
 
   useEffect(() => {
+    fetchHotel();
     fetchBookings();
   }, []);
 
-  const activeBookings = bookings.filter(
-    (booking) => booking.status !== "cancelled"
-  );
-
-  const cancelledBookings = bookings.filter(
-    (booking) => booking.status === "cancelled"
-  );
+  const activeBookings = bookings.filter((b) => b.status !== "cancelled");
+  const cancelledBookings = bookings.filter((b) => b.status === "cancelled");
 
   const totalRevenue = activeBookings.reduce(
     (sum, booking) => sum + Number(booking.total || 0),
@@ -87,13 +136,11 @@ export default function AdminDashboard({ hotelSlug }) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
-
     return `${year}-${month}-${day}`;
   };
 
   const monthlyRevenue = useMemo(() => {
     const months = {};
-
     activeBookings.forEach((booking) => {
       const month = booking.checkin?.slice(0, 7) || "Unknown";
       months[month] = (months[month] || 0) + Number(booking.total || 0);
@@ -107,7 +154,6 @@ export default function AdminDashboard({ hotelSlug }) {
 
   const roomStats = useMemo(() => {
     const rooms = {};
-
     activeBookings.forEach((booking) => {
       const roomName = booking.rooms?.name || "Unknown";
       rooms[roomName] = (rooms[roomName] || 0) + 1;
@@ -124,13 +170,24 @@ export default function AdminDashboard({ hotelSlug }) {
     { name: "Cancelled", value: cancelledBookings.length },
   ];
 
+  const updateSetting = (field, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-white p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold">Admin Dashboard</h1>
-            <p className="text-slate-400 mt-2">Live bookings from Supabase</p>
+            <h1 className="text-4xl font-bold">
+              {hotel?.hotel_name || "Admin Dashboard"}
+            </h1>
+            <p className="text-slate-400 mt-2">
+              Live dashboard for {hotelSlug}
+            </p>
           </div>
 
           <div className="flex gap-3">
@@ -144,7 +201,7 @@ export default function AdminDashboard({ hotelSlug }) {
             <button
               onClick={() => {
                 localStorage.removeItem(`admin_logged_in_${hotelSlug}`);
-window.location.href = `/${hotelSlug}/admin/login`;
+                window.location.href = `/${hotelSlug}/admin/login`;
               }}
               className="bg-red-500 text-white font-bold px-5 py-3 rounded-2xl"
             >
@@ -158,6 +215,31 @@ window.location.href = `/${hotelSlug}/admin/login`;
           <StatCard title="Cancelled" value={cancelledBookings.length} />
           <StatCard title="Revenue" value={`€${totalRevenue}`} />
           <StatCard title="Status" value="Live" green />
+        </div>
+
+        <div className="bg-white text-slate-900 rounded-3xl p-6 shadow-2xl mb-8">
+          <h2 className="text-2xl font-bold mb-5">Hotel Settings</h2>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <Input label="Hotel Name" value={settings.hotel_name} onChange={(v) => updateSetting("hotel_name", v)} />
+            <Input label="Owner Name" value={settings.owner_name} onChange={(v) => updateSetting("owner_name", v)} />
+            <Input label="Owner Email" value={settings.owner_email} onChange={(v) => updateSetting("owner_email", v)} />
+            <Input label="Owner Phone" value={settings.owner_phone} onChange={(v) => updateSetting("owner_phone", v)} />
+            <Input label="Location" value={settings.location} onChange={(v) => updateSetting("location", v)} />
+            <Input label="Address" value={settings.address} onChange={(v) => updateSetting("address", v)} />
+            <Input label="WhatsApp Number" value={settings.whatsapp_number} onChange={(v) => updateSetting("whatsapp_number", v)} />
+            <Input label="Primary Color" value={settings.primary_color} onChange={(v) => updateSetting("primary_color", v)} />
+            <Input label="Logo URL" value={settings.logo_url} onChange={(v) => updateSetting("logo_url", v)} />
+            <Input label="Cover Image URL" value={settings.cover_image_url} onChange={(v) => updateSetting("cover_image_url", v)} />
+          </div>
+
+          <button
+            onClick={saveSettings}
+            disabled={savingSettings}
+            className="mt-6 bg-slate-950 hover:bg-slate-800 disabled:bg-slate-400 text-white font-bold px-6 py-3 rounded-2xl"
+          >
+            {savingSettings ? "Saving..." : "Save Settings"}
+          </button>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
@@ -178,59 +260,32 @@ window.location.href = `/${hotelSlug}/admin/login`;
             </p>
           </div>
 
-          <div className="lg:col-span-2 bg-white text-slate-900 rounded-3xl p-6 shadow-2xl">
-            <h2 className="text-xl font-bold mb-4">Monthly Revenue</h2>
-
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyRevenue}>
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar
-                    dataKey="revenue"
-                    fill="#ef4444"
-                    radius={[10, 10, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+          <ChartBox title="Monthly Revenue">
+            <BarChart data={monthlyRevenue}>
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="revenue" fill="#ef4444" radius={[10, 10, 0, 0]} />
+            </BarChart>
+          </ChartBox>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white text-slate-900 rounded-3xl p-6 shadow-2xl">
-            <h2 className="text-xl font-bold mb-4">Top Rooms</h2>
-
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={roomStats}>
-                  <XAxis dataKey="room" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar
-                    dataKey="count"
-                    fill="#ef4444"
-                    radius={[10, 10, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+          <ChartBox title="Top Rooms">
+            <BarChart data={roomStats}>
+              <XAxis dataKey="room" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#ef4444" radius={[10, 10, 0, 0]} />
+            </BarChart>
+          </ChartBox>
 
           <div className="bg-white text-slate-900 rounded-3xl p-6 shadow-2xl">
             <h2 className="text-xl font-bold mb-4">Booking Status</h2>
-
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie
-                    data={statusData}
-                    dataKey="value"
-                    nameKey="name"
-                    outerRadius={95}
-                    label
-                  >
+                  <Pie data={statusData} dataKey="value" nameKey="name" outerRadius={95} label>
                     <Cell key="active" fill="#7c3aed" />
                     <Cell key="cancelled" fill="#a855f7" />
                   </Pie>
@@ -297,9 +352,7 @@ window.location.href = `/${hotelSlug}/admin/login`;
                       </td>
                       <td className="p-4">
                         {booking.status === "cancelled" ? (
-                          <span className="text-slate-400 text-xs">
-                            Cancelled
-                          </span>
+                          <span className="text-slate-400 text-xs">Cancelled</span>
                         ) : (
                           <button
                             onClick={() => cancelBooking(booking.id)}
@@ -336,6 +389,32 @@ function StatCard({ title, value, green }) {
       <p className={`text-4xl font-bold mt-2 ${green ? "text-green-400" : ""}`}>
         {value}
       </p>
+    </div>
+  );
+}
+
+function Input({ label, value, onChange }) {
+  return (
+    <div>
+      <label className="block text-sm font-semibold mb-2">{label}</label>
+      <input
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
+      />
+    </div>
+  );
+}
+
+function ChartBox({ title, children }) {
+  return (
+    <div className="lg:col-span-2 bg-white text-slate-900 rounded-3xl p-6 shadow-2xl">
+      <h2 className="text-xl font-bold mb-4">{title}</h2>
+      <div className="h-72">
+        <ResponsiveContainer width="100%" height="100%">
+          {children}
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
