@@ -4,6 +4,7 @@ import "react-calendar/dist/Calendar.css";
 import RoomsManager from "./components/RoomsManager";
 import KnowledgeManager from "./components/KnowledgeManager";
 import CRMManager from "./components/CRMManager";
+import MessagingCenter from "./components/MessagingCenter";
 import {
   BarChart,
   Bar,
@@ -247,6 +248,7 @@ export default function AdminDashboard({ hotelSlug }) {
         <RoomsManager hotelSlug={hotelSlug} />
         <KnowledgeManager hotelSlug={hotelSlug} />
         <CRMManager hotelSlug={hotelSlug} />
+        <MessagingCenter hotelSlug={hotelSlug} />
 
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
           <div className="bg-white text-slate-900 rounded-3xl p-6 shadow-2xl">
