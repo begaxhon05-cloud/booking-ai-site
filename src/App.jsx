@@ -224,6 +224,22 @@ function MainWebsite() {
       }
 
       const total = calculateTotal(booking.nights);
+      await fetch("/api/send-booking-confirmation", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    hotel_slug: hotelSlug,
+    name: booking.name,
+    email: booking.email,
+    room: booking.room,
+    checkin: booking.checkin,
+    nights: Number(booking.nights),
+    guests: Number(booking.guests),
+    total,
+  }),
+});
 
       const params = new URLSearchParams({
         name: booking.name,
