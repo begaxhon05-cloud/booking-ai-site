@@ -491,9 +491,9 @@ Total: €${total}`,
             ✓
           </div>
 
-          <h1 className="text-3xl font-bold mb-3">Booking Sent</h1>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-tight mb-6">
 
-          <p className="text-slate-300 mb-6">
+          <p className="text-base sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-8 max-w-2xl">
             Your booking request was sent successfully.
           </p>
 
@@ -569,7 +569,7 @@ Total: €${total}`,
       <main>
         <section className="max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-16 items-center">
           <div>
-            <div className="inline-flex items-center gap-3 rounded-full border border-yellow-400/40 bg-yellow-400/10 px-5 py-2 text-yellow-400 text-sm tracking-[0.25em] font-semibold mb-8">
+            <div className="inline-flex items-center rounded-full border border-yellow-400/30 bg-yellow-400/10 px-4 py-2 text-xs md:text-sm font-bold tracking-widest text-yellow-400 mb-6">
               <span className="h-2 w-2 rounded-full bg-yellow-400" />
               ZGJIDHJA #1 PËR PRONA TURISTIKE
             </div>
@@ -588,14 +588,14 @@ Total: €${total}`,
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
               <button
                 onClick={scrollToDemo}
-                className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold rounded-2xl px-8 py-4 text-lg transition"
+                className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold rounded-2xl px-6 md:px-8 py-3 md:py-4 text-base md:text-lg transition w-full sm:w-auto"
               >
                 Provoje për pronën tënde →
               </button>
 
               <button
                 onClick={() => setChatOpen(true)}
-                className="border border-blue-500/70 hover:bg-blue-500/10 text-white font-bold rounded-2xl px-8 py-4 text-lg transition"
+                className="border border-blue-500/70 hover:bg-blue-500/10 text-white font-bold rounded-2xl px-6 md:px-8 py-3 md:py-4 text-base md:text-lg transition w-full sm:w-auto"
               >
                 ▶ Si funksionon
               </button>
