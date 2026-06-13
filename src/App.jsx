@@ -484,50 +484,31 @@ Total: €${total}`,
   };
 
   if (sent) {
-    return (
-      <div className="min-h-screen bg-[#050914] text-white flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white/10 border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
-          <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-green-500 flex items-center justify-center text-3xl font-bold">
-            ✓
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-tight mb-6">
-
-          <p className="text-base sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-8 max-w-2xl">
-            Your booking request was sent successfully.
-          </p>
-
-          <button
-            onClick={resetForm}
-            className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-semibold py-3 rounded-2xl transition"
-          >
-            New Booking
-          </button>
+  return (
+    <div className="min-h-screen bg-[#050914] text-white flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-white/10 border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
+        <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-green-500 flex items-center justify-center text-3xl font-bold">
+          ✓
         </div>
 
-        <ChatWidget
-          chatOpen={chatOpen}
-          setChatOpen={setChatOpen}
-          messages={messages}
-          pendingBooking={pendingBooking}
-          chatLoading={chatLoading}
-          question={question}
-          setQuestion={setQuestion}
-          sendMessage={sendMessage}
-          loading={loading}
-          submitBooking={submitBooking}
-          isUnavailable={isUnavailable}
-          calculateTotal={calculateTotal}
-          isListening={isListening}
-          startVoiceInput={startVoiceInput}
-          voiceEnabled={voiceEnabled}
-          setVoiceEnabled={setVoiceEnabled}
-          hotel={hotel}
-        />
-      </div>
-    );
-  }
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-tight mb-6">
+          Booking confirmed
+        </h1>
 
+        <p className="text-base sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-8 max-w-2xl">
+          Your booking request was sent successfully.
+        </p>
+
+        <button
+          onClick={resetForm}
+          className="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-semibold py-3 rounded-2xl transition"
+        >
+          New Booking
+        </button>
+      </div>
+    </div>
+  );
+}
   return (
     <div className="min-h-screen bg-[#050914] text-white overflow-x-hidden">
       <header className="sticky top-0 z-40 bg-[#050914]/90 backdrop-blur border-b border-white/10">
