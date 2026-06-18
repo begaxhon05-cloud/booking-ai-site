@@ -555,13 +555,13 @@ Total: €${total}`,
               ZGJIDHJA #1 PËR PRONA TURISTIKE
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-black leading-tight mb-8">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-tight mb-6">
               Më shumë rezervime.
               <br />
               <span className="text-yellow-400">Më pak stres.</span>
             </h1>
 
-            <p className="text-xl text-slate-300 leading-relaxed mb-10 max-w-2xl">
+            <p className="text-base sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-8 max-w-2xl">
               BookingAI automatizon komunikimin, rezervimet dhe menaxhimin e
               klientëve për Airbnb, hotele dhe apartamente me qira ditore.
             </p>
