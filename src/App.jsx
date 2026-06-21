@@ -535,7 +535,7 @@ Total: €${total}`,
                 HOTEL AI BOOKING PLATFORM
               </p>
 
-              <h1 className="text-[46px] sm:text-6xl md:text-7xl font-black leading-[0.96] mb-6">
+              <h1 className="text-[40px] sm:text-6xl md:text-7xl font-black leading-[0.95] mb-6">
                 Rezervo qëndrimin tënd{" "}
                 <span className="text-yellow-400">në pak sekonda.</span>
               </h1>
@@ -566,14 +566,14 @@ Total: €${total}`,
               <img
                 src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop"
                 alt="Luxury hotel"
-                className="w-full h-[360px] md:h-[520px] object-cover"
+                className="w-full h-[330px] md:h-[520px] object-cover"
               />
             </div>
           </div>
         </div>
       </section>
 
-      <section id="features" className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-16">
+      <section id="features" className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-16">
         <div className="grid md:grid-cols-3 gap-5">
           {[
             {
@@ -965,7 +965,7 @@ function ChatWidget({
             ))}
 
             {chatLoading && (
-              <div className="max-w-[85%] rounded-2xl px-4 py-2 text-sm bg-white border border-slate-200 text-slate-800">
+              <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
                 Typing...
               </div>
             )}
