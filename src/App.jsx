@@ -556,7 +556,7 @@ Total: €${total}`,
             </div>
 
             <h1 className="text-3xl sm:text-5xl md:text-7xl font-black leading-tight mb-5">
-              Më shumë rezervime.
+              Më shumë rezervime TEST.
               <br />
               <span className="text-yellow-400">Më pak stres.</span>
             </h1>
