@@ -485,7 +485,7 @@ Total: €${total}`,
 
   if (sent) {
   return (
-    <div className="min-h-screen bg-[#050914] text-white overflow-x-hidden pb-24 md:pb-0">
+    <div className="min-h-screen bg-[#050914] text-white overflow-x-hidden pb-28 md:pb-0">
       <div className="max-w-md w-full bg-white/10 border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
         <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-green-500 flex items-center justify-center text-3xl font-bold">
           ✓
@@ -511,67 +511,74 @@ Total: €${total}`,
 }
    return (
   <div className="min-h-screen bg-[#050914] text-white overflow-x-hidden pb-28 md:pb-0">
-    <header className="sticky top-0 z-40 bg-[#050914]/95 backdrop-blur border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-        <div className="text-2xl md:text-3xl font-black">
-          Booking<span className="text-yellow-400">AI</span>
-        </div>
+    <header className="sticky top-0 z-40 bg-[#050914]/95 backdrop-blur border-b border-white/10 rounded-b-[2rem]">
+  <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 flex items-center justify-between">
+    <div className="text-3xl font-black">
+      Booking<span className="text-yellow-400">AI</span>
+    </div>
 
-        <button
-          onClick={scrollToDemo}
-          className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-5 py-3 md:px-8 md:py-4 text-sm md:text-lg shadow-lg shadow-yellow-400/20"
-        >
-          Rezervo tani →
-        </button>
-      </div>
-    </header>
+    <button
+      onClick={scrollToDemo}
+      className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-6 py-4 text-lg shadow-lg shadow-yellow-400/20"
+    >
+      Rezervo tani →
+    </button>
 
-    <main>
-      <section className="max-w-7xl mx-auto px-4 pt-7 pb-12 md:px-6 md:py-20">
-        <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 md:p-10 shadow-2xl">
-          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div>
-              <p className="text-yellow-400 text-sm md:text-base tracking-widest font-black mb-5">
-                HOTEL AI BOOKING PLATFORM
-              </p>
+    <button
+      onClick={() => setChatOpen(true)}
+      className="md:hidden text-white text-4xl leading-none"
+    >
+      ☰
+    </button>
+  </div>
+</header>
 
-              <h1 className="text-[40px] sm:text-6xl md:text-7xl font-black leading-[0.95] mb-6">
-                Rezervo qëndrimin tënd{" "}
-                <span className="text-yellow-400">në pak sekonda.</span>
-              </h1>
+<main>
+  <section className="max-w-7xl mx-auto px-4 pt-7 pb-10 md:px-6 md:py-20">
+    <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 md:p-10 shadow-2xl">
+      <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div>
+          <p className="text-yellow-400 text-sm md:text-base tracking-widest font-black mb-5">
+            HOTEL AI BOOKING PLATFORM
+          </p>
 
-              <p className="text-[18px] md:text-xl text-slate-300 leading-relaxed mb-7 max-w-xl">
-                Zgjidh dhomën, kontrollo disponueshmërinë dhe konfirmo
-                rezervimin me ndihmën e AI receptionist 24/7.
-              </p>
+          <h1 className="text-[46px] sm:text-6xl md:text-7xl font-black leading-[0.95] mb-6">
+            Rezervo qëndrimin tënd{" "}
+            <span className="text-yellow-400">në pak sekonda.</span>
+          </h1>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={scrollToDemo}
-                  className="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-8 py-4 text-lg shadow-lg shadow-yellow-400/20"
-                >
-                  Rezervo tani →
-                </button>
+          <p className="text-[18px] md:text-xl text-slate-300 leading-relaxed mb-7 max-w-xl">
+            Zgjidh dhomën, kontrollo disponueshmërinë dhe konfirmo
+            rezervimin me ndihmën e AI receptionist 24/7.
+          </p>
 
-                <button
-                  onClick={() => setChatOpen(true)}
-                  className="w-full sm:w-auto border border-yellow-400/60 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl px-8 py-4 text-lg"
-                >
-                  💬 Fol me AI Assistant
-                </button>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-3 mb-7">
+            <button
+              onClick={scrollToDemo}
+              className="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-8 py-4 text-lg shadow-lg shadow-yellow-400/20"
+            >
+              Rezervo tani →
+            </button>
 
-            <div className="rounded-[1.7rem] overflow-hidden border border-white/10 shadow-2xl">
-              <img
-                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop"
-                alt="Luxury hotel"
-                className="w-full h-[330px] md:h-[520px] object-cover"
-              />
-            </div>
+            <button
+              onClick={() => setChatOpen(true)}
+              className="w-full sm:w-auto border border-yellow-400/60 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl px-8 py-4 text-lg"
+            >
+              💬 Fol me AI Assistant
+            </button>
           </div>
         </div>
-      </section>
+
+        <div className="rounded-[1.7rem] overflow-hidden border border-white/10 shadow-2xl">
+          <img
+            src="/hotel-hero.png"
+            alt="Luxury hotel"
+            className="w-full h-[430px] md:h-[520px] object-cover"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
 
       <section id="features" className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-16">
         <div className="grid md:grid-cols-3 gap-5">
@@ -886,6 +893,31 @@ Total: €${total}`,
         </button>
       </div>
     </div>
+    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#050914]/95 backdrop-blur border-t border-white/10 px-4 py-3">
+  <div className="grid grid-cols-4 gap-2 text-center">
+    <a href="#" className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-bold">
+      🏠<br />Kreu
+    </a>
+
+    <a href="#features" className="text-white py-3 font-semibold">
+      ▦<br />Features
+    </a>
+
+    <button
+      onClick={() => setChatOpen(true)}
+      className="text-white py-3 font-semibold"
+    >
+      ☎<br />Kontakt
+    </button>
+
+    <button
+      onClick={scrollToDemo}
+      className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-black"
+    >
+      Rezervo →
+    </button>
+  </div>
+</div>
       <ChatWidget
         chatOpen={chatOpen}
         setChatOpen={setChatOpen}
