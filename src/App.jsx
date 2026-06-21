@@ -552,36 +552,66 @@ Total: €${total}`,
           <div>
             <div className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold rounded-2xl px-5 md:px-8 py-3 md:py-4 text-sm md:text-lg transition w-full sm:w-auto">
               <span className="h-2 w-2 rounded-full bg-yellow-400" />
-              ZGJIDHJA #1 PËR PRONA TURISTIKE
+              HOTEL AI BOOKING PLATFORM
             </div>
 
-            <h1 className="text-[34px] sm:text-5xl md:text-7xl font-black leading-[1.05] mb-5">
-              Më shumë rezervime TEST.
+            <h1 className="text-[38px] sm:text-5xl md:text-7xl font-black leading-[1.03] mb-5">
+              Rezervo qëndrimin tënd
+në pak sekonda.
               <br />
               <span className="text-yellow-400">Më pak stres.</span>
             </h1>
 
-            <p className="text-[15px] sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-6 max-w-2xl">
-              BookingAI automatizon komunikimin, rezervimet dhe menaxhimin e
-              klientëve për Airbnb, hotele dhe apartamente me qira ditore.
+            <p className="text-[16px] sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-6 max-w-xl">
+              Zgjidh dhomën, kontrollo disponueshmërinë dhe konfirmo rezervimin me ndihmën e AI receptionist 24/7.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <button
                 onClick={scrollToDemo}
-                className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold rounded-2xl px-6 md:px-8 py-3 md:py-4 text-base md:text-lg transition w-full sm:w-auto"
+                className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold rounded-2xl px-6 py-4 text-base transition w-full sm:w-auto shadow-lg shadow-yellow-400/20"
               >
-                Provoje për pronën tënde →
+                Rezervo tani →
               </button>
 
               <button
                 onClick={() => setChatOpen(true)}
-                className="border border-blue-500/70 hover:bg-blue-500/10 text-white font-bold rounded-2xl px-6 md:px-8 py-3 md:py-4 text-base md:text-lg transition w-full sm:w-auto"
+                className="border border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl px-6 py-4 text-base transition w-full sm:w-auto"
               >
-                ▶ Si funksionon
+                ▶ Fol me AI Assistant
               </button>
             </div>
           </div>
+          <div className="bg-white text-slate-900 rounded-3xl p-4 sm:p-5 shadow-2xl border border-yellow-400/30 max-w-2xl">
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+    <div>
+      <p className="text-slate-500 font-semibold mb-1">Destinacioni</p>
+      <p className="font-bold">Sarandë</p>
+    </div>
+
+    <div>
+      <p className="text-slate-500 font-semibold mb-1">Check-in</p>
+      <p className="font-bold">Zgjidh datën</p>
+    </div>
+
+    <div>
+      <p className="text-slate-500 font-semibold mb-1">Netë</p>
+      <p className="font-bold">1+</p>
+    </div>
+
+    <div>
+      <p className="text-slate-500 font-semibold mb-1">Guests</p>
+      <p className="font-bold">1+</p>
+    </div>
+  </div>
+
+  <button
+    onClick={scrollToDemo}
+    className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl"
+  >
+    Kontrollo disponueshmërinë
+  </button>
+</div>
 
           <div className="rounded-[2rem] border border-white/10 bg-[#0b1324] shadow-2xl overflow-hidden">
             <div className="grid md:grid-cols-2">
