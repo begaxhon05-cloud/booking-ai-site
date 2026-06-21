@@ -509,466 +509,383 @@ Total: €${total}`,
     </div>
   );
 }
-  return (
-    <div className="min-h-screen bg-[#050914] text-white overflow-x-hidden">
-      <header className="sticky top-0 z-40 bg-[#050914]/90 backdrop-blur border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-yellow-400/10 border border-yellow-400/50 flex items-center justify-center text-yellow-400 font-bold">
-              ⌘
-            </div>
-
-            <div className="text-2xl font-bold">
-              Booking<span className="text-yellow-400">AI</span>
-            </div>
-          </div>
-
-          <nav className="inline-flex items-center gap-2 rounded-full border border-yellow-400/40 bg-yellow-400/10 px-3 py-2 text-yellow-400 text-[9px] sm:text-sm tracking-widest font-semibold mb-5">
-            <a href="#features" className="hover:text-yellow-400">
-              Features
-            </a>
-            <a href="#how" className="hover:text-yellow-400">
-              Si funksionon
-            </a>
-            <a href="#contact" className="hover:text-yellow-400">
-              Kontakt
-            </a>
-          </nav>
-
-          <button
-            onClick={scrollToDemo}
-            className="border border-blue-500/70 hover:bg-blue-500/10 text-white font-bold rounded-2xl px-5 md:px-8 py-3 md:py-4 text-sm md:text-lg transition w-full sm:w-auto"
-          >
-            Rezervo tani →
-          </button>
+   return (
+  <div className="min-h-screen bg-[#050914] text-white overflow-x-hidden pb-28 md:pb-0">
+    <header className="sticky top-0 z-40 bg-[#050914]/95 backdrop-blur border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
+        <div className="text-2xl md:text-3xl font-black">
+          Booking<span className="text-yellow-400">AI</span>
         </div>
-      </header>
 
-      <main>
-        <section className="max-w-7xl mx-auto px-4 pt-8 pb-12 md:px-6 md:py-20 grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
-          <div>
-            <div className="inline-flex items-center rounded-full border border-yellow-400/30 bg-yellow-400/10 px-4 py-2 text-yellow-400 text-xs font-bold tracking-widest mb-6">
-  AI HOTEL PLATFORM
-</div>
+        <button
+          onClick={scrollToDemo}
+          className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-5 py-3 md:px-8 md:py-4 text-sm md:text-lg shadow-lg shadow-yellow-400/20"
+        >
+          Rezervo tani →
+        </button>
+      </div>
+    </header>
 
-            <h1 className="text-[42px] md:text-7xl font-black leading-[0.95] mb-6">
-  Smart Booking
-  <br />
-  <span className="text-yellow-400">
-    For Modern
-  </span>
-  <br />
-  Hotels
-</h1>
-
-            <p className="text-[16px] sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-6 max-w-xl">
-              Select the room, check the availability and confirm the reservation with the help of AI receptionist 24/7.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
-              <button
-                onClick={scrollToDemo}
-                className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold rounded-2xl px-6 py-4 text-base transition w-full sm:w-auto shadow-lg shadow-yellow-400/20"
-              >
-                Rezervo tani →
-              </button>
-
-              <button
-                onClick={() => setChatOpen(true)}
-                className="border border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl px-6 py-4 text-base transition w-full sm:w-auto"
-              >
-                ▶ Fol me AI Assistant
-              </button>
-            </div>
-          </div>
-
-          <div className="rounded-[2rem] border border-white/10 bg-[#0b1324] shadow-2xl overflow-hidden">
-            <div className="grid md:grid-cols-2">
-              <div className="p-8">
-                <div className="flex items-center gap-4 mb-10">
-                  <div className="h-12 w-12 rounded-xl bg-yellow-400/10 border border-yellow-400/40 flex items-center justify-center text-yellow-400">
-                    ⌘
-                  </div>
-                  <p className="font-bold">BookingAI</p>
-                </div>
-
-                <h2 className="text-2xl font-bold mb-6">Përmbledhje</h2>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                    <p className="text-slate-400 text-sm">Rezervime</p>
-                    <p className="text-4xl font-bold mt-3">24</p>
-                    <p className="text-green-400 text-sm mt-2">+12%</p>
-                  </div>
-
-                  <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                    <p className="text-slate-400 text-sm">Të ardhura</p>
-                    <p className="text-3xl font-bold mt-3">€3,240</p>
-                    <p className="text-green-400 text-sm mt-2">+16%</p>
-                  </div>
-
-                  <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                    <p className="text-slate-400 text-sm">Klientë</p>
-                    <p className="text-4xl font-bold mt-3">18</p>
-                    <p className="text-green-400 text-sm mt-2">+8%</p>
-                  </div>
-                </div>
-
-                <div className="mt-8 bg-white/5 border border-white/10 rounded-2xl p-5">
-                  <p className="text-slate-400 text-sm">Automations aktive</p>
-                  <p className="mt-3 text-sm text-slate-300">
-                    WhatsApp AI • Email • Supabase • Room Availability • Voice
-                  </p>
-                </div>
-              </div>
-
-              <div className="min-h-[430px] bg-gradient-to-br from-yellow-500/30 to-blue-900/30 flex items-center justify-center p-8">
-                <div className="w-full h-full rounded-3xl bg-[url('https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop')] bg-cover bg-center shadow-2xl" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="how" className="max-w-7xl mx-auto px-6 py-16">
-          <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 md:p-12">
-            <h2 className="text-4xl font-bold mb-8">
-              Si funksionon Booking<span className="text-yellow-400">AI</span>
-            </h2>
-
-            <div className="grid md:grid-cols-4 gap-5">
-              {[
-                "Klienti pyet në web ose WhatsApp",
-                "AI kontrollon dhomat dhe datat",
-                "AI përgatit përmbledhjen",
-                "Klienti konfirmon dhe sistemi bën rezervimin",
-              ].map((stepText, index) => (
-                <div
-                  key={stepText}
-                  className="bg-[#050914] border border-white/10 rounded-3xl p-6"
-                >
-                  <p className="text-yellow-400 text-3xl font-black mb-4">
-                    0{index + 1}
-                  </p>
-
-                  <p className="text-slate-300">{stepText}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="demo" className="max-w-7xl mx-auto px-6 py-16">
-          <div className="grid lg:grid-cols-2 gap-10 items-start">
+    <main>
+      <section className="max-w-7xl mx-auto px-4 pt-7 pb-12 md:px-6 md:py-20">
+        <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 md:p-10 shadow-2xl">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <div>
-              <p className="text-yellow-400 font-bold mb-3">LIVE DEMO</p>
-
-              <h2 className="text-4xl md:text-5xl font-black mb-6">
-                Provoje sistemin real tani.
-              </h2>
-
-              <p className="text-slate-300 text-lg leading-relaxed mb-6">
-                Mund të përdorësh formën klasike ose chatbot-in poshtë djathtas.
-                AI mund të kontrollojë disponueshmërinë, të mbledhë të dhënat,
-                të flasë me zë dhe të krijojë rezervim pas konfirmimit.
+              <p className="text-yellow-400 text-sm md:text-base tracking-widest font-black mb-5">
+                HOTEL AI BOOKING PLATFORM
               </p>
 
-              <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-slate-300">
-                <p className="font-bold text-white mb-2">Shembull për chat:</p>
+              <h1 className="text-[46px] sm:text-6xl md:text-7xl font-black leading-[0.96] mb-6">
+                Rezervo qëndrimin tënd{" "}
+                <span className="text-yellow-400">në pak sekonda.</span>
+              </h1>
 
-                <p>
-                  Dua Room 101 me date 2026-08-10 per 2 nete per 2 persona.
-                  Emri Xhon Bega, email test@test.com
-                </p>
+              <p className="text-[18px] md:text-xl text-slate-300 leading-relaxed mb-7 max-w-xl">
+                Zgjidh dhomën, kontrollo disponueshmërinë dhe konfirmo
+                rezervimin me ndihmën e AI receptionist 24/7.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={scrollToDemo}
+                  className="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-8 py-4 text-lg shadow-lg shadow-yellow-400/20"
+                >
+                  Rezervo tani →
+                </button>
+
+                <button
+                  onClick={() => setChatOpen(true)}
+                  className="w-full sm:w-auto border border-yellow-400/60 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl px-8 py-4 text-lg"
+                >
+                  💬 Fol me AI Assistant
+                </button>
               </div>
             </div>
 
-            <div className="bg-white text-slate-900 rounded-3xl p-6 md:p-8 shadow-2xl">
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-2xl font-bold">Booking Request</h2>
+            <div className="rounded-[1.7rem] overflow-hidden border border-white/10 shadow-2xl">
+              <img
+                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop"
+                alt="Luxury hotel"
+                className="w-full h-[360px] md:h-[520px] object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
-                  <span className="text-sm font-semibold text-slate-500">
-                    Step {step}/4
-                  </span>
-                </div>
-
-                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-yellow-400 transition-all"
-                    style={{ width: `${(step / 4) * 100}%` }}
-                  />
-                </div>
+      <section id="features" className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-16">
+        <div className="grid md:grid-cols-3 gap-5">
+          {[
+            {
+              title: "AI Receptionist 24/7",
+              text: "Përgjigjet për dhomat, çmimet, datat dhe rezervimet.",
+            },
+            {
+              title: "Voice Assistant",
+              text: "Klienti mund të flasë me zë dhe AI përgjigjet me zë.",
+            },
+            {
+              title: "WhatsApp + Email",
+              text: "Konfirmime automatike për klientin dhe pronarin.",
+            },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="bg-white/5 border border-white/10 rounded-3xl p-6 hover:border-yellow-400/40 transition"
+            >
+              <div className="h-12 w-12 rounded-2xl bg-yellow-400/10 text-yellow-400 flex items-center justify-center mb-5">
+                ✦
               </div>
 
-              <form onSubmit={onSubmit}>
-                {step === 1 && (
-                  <div className="space-y-5">
-                    <div>
-                      <h3 className="text-xl font-bold mb-1">Select Dates</h3>
-                      <p className="text-slate-500 mb-5">
-                        Choose your room, check-in date and number of nights.
+              <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+              <p className="text-slate-400 leading-relaxed">{item.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="demo" className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-16">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-10 items-start">
+          <div>
+            <p className="text-yellow-400 font-bold mb-3">REZERVO ONLINE</p>
+
+            <h2 className="text-4xl md:text-5xl font-black mb-6">
+              Provoje sistemin real tani.
+            </h2>
+
+            <p className="text-slate-300 text-lg leading-relaxed mb-6">
+              Plotëso formën e rezervimit ose fol direkt me AI Assistant.
+            </p>
+          </div>
+
+          <div className="bg-white text-slate-900 rounded-3xl p-6 md:p-8 shadow-2xl">
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-2xl font-bold">Booking Request</h2>
+                <span className="text-sm font-semibold text-slate-500">
+                  Step {step}/4
+                </span>
+              </div>
+
+              <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-yellow-400 transition-all"
+                  style={{ width: `${(step / 4) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            <form onSubmit={onSubmit}>
+              {step === 1 && (
+                <div className="space-y-5">
+                  <div>
+                    <h3 className="text-xl font-bold mb-1">Select Dates</h3>
+                    <p className="text-slate-500 mb-5">
+                      Choose your room, check-in date and number of nights.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">
+                      Room
+                    </label>
+
+                    <select
+                      name="room"
+                      value={form.room}
+                      onChange={onChange}
+                      required
+                      className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
+                    >
+                      {rooms.map((room) => (
+                        <option key={room} value={room}>
+                          {room}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">
+                      Check-in
+                    </label>
+
+                    <input
+                      type="date"
+                      name="checkin"
+                      value={form.checkin}
+                      onChange={onChange}
+                      min={new Date().toISOString().split("T")[0]}
+                      required
+                      className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
+                    />
+
+                    {form.checkin && isRoomBooked && (
+                      <p className="text-red-500 text-sm mt-2 font-semibold">
+                        This room is already booked for this date.
                       </p>
-                    </div>
+                    )}
+                  </div>
 
-                    <div>
-                      <label className="block text-sm font-semibold mb-2">
-                        Room
-                      </label>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">
+                      Nights
+                    </label>
 
-                      <select
-                        name="room"
-                        value={form.room}
-                        onChange={onChange}
-                        required
-                        className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                      >
-                        {rooms.map((room) => (
-                          <option key={room} value={room}>
-                            {room}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <input
+                      type="number"
+                      name="nights"
+                      min="1"
+                      value={form.nights}
+                      onChange={onChange}
+                      required
+                      className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
+                    />
+                  </div>
 
-                    <div>
-                      <label className="block text-sm font-semibold mb-2">
-                        Check-in
-                      </label>
+                  <button
+                    type="button"
+                    onClick={next}
+                    disabled={!form.checkin || !form.nights}
+                    className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-semibold py-3 rounded-2xl transition"
+                  >
+                    Continue
+                  </button>
+                </div>
+              )}
 
-                      <input
-                        type="date"
-                        name="checkin"
-                        value={form.checkin}
-                        onChange={onChange}
-                        min={new Date().toISOString().split("T")[0]}
-                        required
-                        className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                      />
+              {step === 2 && (
+                <div className="space-y-5">
+                  <h3 className="text-xl font-bold">Guests</h3>
 
-                      {form.checkin && isRoomBooked && (
-                        <p className="text-red-500 text-sm mt-2 font-semibold">
-                          This room is already booked for this date. Choose
-                          another room or date.
-                        </p>
-                      )}
-                    </div>
+                  <input
+                    type="number"
+                    name="guests"
+                    min="1"
+                    value={form.guests}
+                    onChange={onChange}
+                    required
+                    className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
+                  />
 
-                    <div>
-                      <label className="block text-sm font-semibold mb-2">
-                        Nights
-                      </label>
-
-                      <input
-                        type="number"
-                        name="nights"
-                        min="1"
-                        value={form.nights}
-                        onChange={onChange}
-                        required
-                        className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                      />
-                    </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={back}
+                      className="border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
+                    >
+                      Back
+                    </button>
 
                     <button
                       type="button"
                       onClick={next}
-                      disabled={!form.checkin || !form.nights}
-                      className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-semibold py-3 rounded-2xl transition"
+                      className="bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-2xl transition"
                     >
                       Continue
                     </button>
                   </div>
-                )}
+                </div>
+              )}
 
-                {step === 2 && (
-                  <div className="space-y-5">
-                    <h3 className="text-xl font-bold">Guests</h3>
+              {step === 3 && (
+                <div className="space-y-5">
+                  <h3 className="text-xl font-bold">Your Info</h3>
 
-                    <div>
-                      <label className="block text-sm font-semibold mb-2">
-                        Guests
-                      </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={form.name}
+                    onChange={onChange}
+                    placeholder="Name"
+                    required
+                    className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
+                  />
 
-                      <input
-                        type="number"
-                        name="guests"
-                        min="1"
-                        value={form.guests}
-                        onChange={onChange}
-                        required
-                        className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                      />
-                    </div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={onChange}
+                    placeholder="Email"
+                    required
+                    className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
+                  />
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={back}
-                        className="border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
-                      >
-                        Back
-                      </button>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={back}
+                      className="border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
+                    >
+                      Back
+                    </button>
 
-                      <button
-                        type="button"
-                        onClick={next}
-                        className="bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-2xl transition"
-                      >
-                        Continue
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={next}
+                      disabled={!form.name || !form.email}
+                      className="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-semibold py-3 rounded-2xl transition"
+                    >
+                      Continue
+                    </button>
                   </div>
-                )}
+                </div>
+              )}
 
-                {step === 3 && (
-                  <div className="space-y-5">
-                    <h3 className="text-xl font-bold">Your Info</h3>
+              {step === 4 && (
+                <div className="space-y-5">
+                  <h3 className="text-xl font-bold">Confirm Booking</h3>
 
-                    <div>
-                      <label className="block text-sm font-semibold mb-2">
-                        Name
-                      </label>
+                  <div className="bg-slate-100 rounded-2xl p-5 space-y-3">
+                    {[
+                      ["Name", form.name],
+                      ["Email", form.email],
+                      ["Room", form.room],
+                      ["Check-in", form.checkin],
+                      ["Nights", form.nights],
+                      ["Guests", form.guests],
+                    ].map(([label, value]) => (
+                      <div key={label} className="flex justify-between">
+                        <span className="text-slate-500">{label}</span>
+                        <span className="font-semibold">{value}</span>
+                      </div>
+                    ))}
 
-                      <input
-                        type="text"
-                        name="name"
-                        value={form.name}
-                        onChange={onChange}
-                        required
-                        className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                      />
-                    </div>
+                    <div className="border-t border-slate-300 pt-3 mt-3">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">
+                          €{pricePerNight} x {form.nights} nights
+                        </span>
+                        <span className="font-semibold">
+                          €{Number(form.nights) * pricePerNight}
+                        </span>
+                      </div>
 
-                    <div>
-                      <label className="block text-sm font-semibold mb-2">
-                        Email
-                      </label>
+                      <div className="flex justify-between mt-2">
+                        <span className="text-slate-500">Service fee</span>
+                        <span className="font-semibold">€{serviceFee}</span>
+                      </div>
 
-                      <input
-                        type="email"
-                        name="email"
-                        value={form.email}
-                        onChange={onChange}
-                        required
-                        className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={back}
-                        className="border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
-                      >
-                        Back
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={next}
-                        disabled={!form.name || !form.email}
-                        className="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-semibold py-3 rounded-2xl transition"
-                      >
-                        Continue
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {step === 4 && (
-                  <div className="space-y-5">
-                    <h3 className="text-xl font-bold">Confirm Booking</h3>
-
-                    <div className="bg-slate-100 rounded-2xl p-5 space-y-3">
-                      {[
-                        ["Name", form.name],
-                        ["Email", form.email],
-                        ["Room", form.room],
-                        ["Check-in", form.checkin],
-                        ["Nights", form.nights],
-                        ["Guests", form.guests],
-                      ].map(([label, value]) => (
-                        <div key={label} className="flex justify-between">
-                          <span className="text-slate-500">{label}</span>
-                          <span className="font-semibold">{value}</span>
-                        </div>
-                      ))}
-
-                      <div className="border-t border-slate-300 pt-3 mt-3">
-                        <div className="flex justify-between">
-                          <span className="text-slate-500">
-                            €{pricePerNight} x {form.nights} nights
-                          </span>
-
-                          <span className="font-semibold">
-                            €{Number(form.nights) * pricePerNight}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between mt-2">
-                          <span className="text-slate-500">Service fee</span>
-                          <span className="font-semibold">€{serviceFee}</span>
-                        </div>
-
-                        <div className="flex justify-between mt-3 text-lg">
-                          <span className="font-bold">Total</span>
-
-                          <span className="font-bold text-green-600">
-                            €{totalPrice}
-                          </span>
-                        </div>
+                      <div className="flex justify-between mt-3 text-lg">
+                        <span className="font-bold">Total</span>
+                        <span className="font-bold text-green-600">
+                          €{totalPrice}
+                        </span>
                       </div>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={back}
-                        className="border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
-                      >
-                        Back
-                      </button>
-
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="bg-yellow-400 hover:bg-yellow-500 disabled:bg-yellow-200 text-slate-950 font-semibold py-3 rounded-2xl transition"
-                      >
-                        {loading ? "Sending..." : "Confirm"}
-                      </button>
-                    </div>
                   </div>
-                )}
-              </form>
-            </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={back}
+                      className="border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
+                    >
+                      Back
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="bg-yellow-400 hover:bg-yellow-500 disabled:bg-yellow-200 text-slate-950 font-semibold py-3 rounded-2xl transition"
+                    >
+                      {loading ? "Sending..." : "Confirm"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </form>
           </div>
-        </section>
-      </main>
-<div className="fixed bottom-0 left-0 right-0 md:hidden bg-[#050914]/95 backdrop-blur border-t border-white/10 z-50">
-  <div className="grid grid-cols-4 text-center py-3">
-    <a href="#" className="text-white text-sm font-semibold">
-      Kreu
-    </a>
+        </div>
+      </section>
+    </main>
 
-    <a href="#features" className="text-white text-sm font-semibold">
-      Features
-    </a>
+    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#050914]/95 backdrop-blur border-t border-white/10 px-4 py-3">
+      <div className="grid grid-cols-4 gap-2 items-center text-center">
+        <a href="#" className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-bold">
+          Kreu
+        </a>
 
-    <button
-      onClick={() => setChatOpen(true)}
-      className="text-white text-sm font-semibold"
-    >
-      Chat
-    </button>
+        <a href="#features" className="text-white py-3 font-semibold">
+          Features
+        </a>
 
-    <button
-      onClick={scrollToDemo}
-      className="text-yellow-400 text-sm font-bold"
-    >
-      Rezervo
-    </button>
-  </div>
-</div>
+        <button
+          onClick={() => setChatOpen(true)}
+          className="text-white py-3 font-semibold"
+        >
+          Chat
+        </button>
+
+        <button
+          onClick={scrollToDemo}
+          className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-black"
+        >
+          Rezervo
+        </button>
+      </div>
+    </div>
       <ChatWidget
         chatOpen={chatOpen}
         setChatOpen={setChatOpen}
