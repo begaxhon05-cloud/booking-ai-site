@@ -523,7 +523,7 @@ Total: €${total}`,
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-10 text-slate-200">
+          <nav className="inline-flex items-center gap-2 rounded-full border border-yellow-400/40 bg-yellow-400/10 px-3 py-2 text-yellow-400 text-[9px] sm:text-sm tracking-widest font-semibold mb-5">
             <a href="#features" className="hover:text-yellow-400">
               Features
             </a>
@@ -540,7 +540,7 @@ Total: €${total}`,
 
           <button
             onClick={scrollToDemo}
-            className="border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-slate-950 font-semibold rounded-2xl px-6 py-3 transition"
+            className="border border-blue-500/70 hover:bg-blue-500/10 text-white font-bold rounded-2xl px-5 md:px-8 py-3 md:py-4 text-sm md:text-lg transition w-full sm:w-auto"
           >
             Kërko Demo →
           </button>
@@ -548,20 +548,20 @@ Total: €${total}`,
       </header>
 
       <main>
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-20 grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
+        <section className="max-w-7xl mx-auto px-4 pt-8 pb-12 md:px-6 md:py-20 grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-yellow-400/40 bg-yellow-400/10 px-3 py-2 text-yellow-400 text-[10px] sm:text-sm tracking-widest font-semibold mb-5">
+            <div className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold rounded-2xl px-5 md:px-8 py-3 md:py-4 text-sm md:text-lg transition w-full sm:w-auto">
               <span className="h-2 w-2 rounded-full bg-yellow-400" />
               ZGJIDHJA #1 PËR PRONA TURISTIKE
             </div>
 
-            <h1 className="text-3xl sm:text-5xl md:text-7xl font-black leading-tight mb-5">
+            <h1 className="text-[34px] sm:text-5xl md:text-7xl font-black leading-[1.05] mb-5">
               Më shumë rezervime TEST.
               <br />
               <span className="text-yellow-400">Më pak stres.</span>
             </h1>
 
-            <p className="text-sm sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-6 max-w-2xl">
+            <p className="text-[15px] sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-6 max-w-2xl">
               BookingAI automatizon komunikimin, rezervimet dhe menaxhimin e
               klientëve për Airbnb, hotele dhe apartamente me qira ditore.
             </p>
