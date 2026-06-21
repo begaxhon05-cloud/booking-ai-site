@@ -548,25 +548,25 @@ Total: €${total}`,
       </header>
 
       <main>
-        <section className="max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-16 items-center">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-20 grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
           <div>
-            <div className="inline-flex items-center rounded-full border border-yellow-400/30 bg-yellow-400/10 px-4 py-2 text-xs md:text-sm font-bold tracking-widest text-yellow-400 mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-yellow-400/40 bg-yellow-400/10 px-3 py-2 text-yellow-400 text-[10px] sm:text-sm tracking-widest font-semibold mb-5">
               <span className="h-2 w-2 rounded-full bg-yellow-400" />
               ZGJIDHJA #1 PËR PRONA TURISTIKE
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-tight mb-6">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-black leading-tight mb-5">
               Më shumë rezervime.
               <br />
               <span className="text-yellow-400">Më pak stres.</span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-8 max-w-2xl">
+            <p className="text-sm sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-6 max-w-2xl">
               BookingAI automatizon komunikimin, rezervimet dhe menaxhimin e
               klientëve për Airbnb, hotele dhe apartamente me qira ditore.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-10">
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <button
                 onClick={scrollToDemo}
                 className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold rounded-2xl px-6 md:px-8 py-3 md:py-4 text-base md:text-lg transition w-full sm:w-auto"
