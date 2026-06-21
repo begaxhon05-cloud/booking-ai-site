@@ -485,7 +485,7 @@ Total: €${total}`,
 
   if (sent) {
   return (
-    <div className="min-h-screen bg-[#050914] text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#050914] text-white overflow-x-hidden pb-24 md:pb-0">
       <div className="max-w-md w-full bg-white/10 border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
         <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-green-500 flex items-center justify-center text-3xl font-bold">
           ✓
@@ -530,9 +530,6 @@ Total: €${total}`,
             <a href="#how" className="hover:text-yellow-400">
               Si funksionon
             </a>
-            <a href="#demo" className="hover:text-yellow-400">
-              Demo
-            </a>
             <a href="#contact" className="hover:text-yellow-400">
               Kontakt
             </a>
@@ -542,7 +539,7 @@ Total: €${total}`,
             onClick={scrollToDemo}
             className="border border-blue-500/70 hover:bg-blue-500/10 text-white font-bold rounded-2xl px-5 md:px-8 py-3 md:py-4 text-sm md:text-lg transition w-full sm:w-auto"
           >
-            Kërko Demo →
+            Rezervo tani →
           </button>
         </div>
       </header>
@@ -550,20 +547,22 @@ Total: €${total}`,
       <main>
         <section className="max-w-7xl mx-auto px-4 pt-8 pb-12 md:px-6 md:py-20 grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
           <div>
-            <div className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-bold rounded-2xl px-5 md:px-8 py-3 md:py-4 text-sm md:text-lg transition w-full sm:w-auto">
-              <span className="h-2 w-2 rounded-full bg-yellow-400" />
-              HOTEL AI BOOKING PLATFORM
-            </div>
+            <div className="inline-flex items-center rounded-full border border-yellow-400/30 bg-yellow-400/10 px-4 py-2 text-yellow-400 text-xs font-bold tracking-widest mb-6">
+  AI HOTEL PLATFORM
+</div>
 
-            <h1 className="text-[38px] sm:text-5xl md:text-7xl font-black leading-[1.03] mb-5">
-              Rezervo qëndrimin tënd
-në pak sekonda.
-              <br />
-              <span className="text-yellow-400">Më pak stres.</span>
-            </h1>
+            <h1 className="text-[42px] md:text-7xl font-black leading-[0.95] mb-6">
+  Smart Booking
+  <br />
+  <span className="text-yellow-400">
+    For Modern
+  </span>
+  <br />
+  Hotels
+</h1>
 
             <p className="text-[16px] sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-6 max-w-xl">
-              Zgjidh dhomën, kontrollo disponueshmërinë dhe konfirmo rezervimin me ndihmën e AI receptionist 24/7.
+              Select the room, check the availability and confirm the reservation with the help of AI receptionist 24/7.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -582,36 +581,6 @@ në pak sekonda.
               </button>
             </div>
           </div>
-          <div className="bg-white text-slate-900 rounded-3xl p-4 sm:p-5 shadow-2xl border border-yellow-400/30 max-w-2xl">
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-    <div>
-      <p className="text-slate-500 font-semibold mb-1">Destinacioni</p>
-      <p className="font-bold">Sarandë</p>
-    </div>
-
-    <div>
-      <p className="text-slate-500 font-semibold mb-1">Check-in</p>
-      <p className="font-bold">Zgjidh datën</p>
-    </div>
-
-    <div>
-      <p className="text-slate-500 font-semibold mb-1">Netë</p>
-      <p className="font-bold">1+</p>
-    </div>
-
-    <div>
-      <p className="text-slate-500 font-semibold mb-1">Guests</p>
-      <p className="font-bold">1+</p>
-    </div>
-  </div>
-
-  <button
-    onClick={scrollToDemo}
-    className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl"
-  >
-    Kontrollo disponueshmërinë
-  </button>
-</div>
 
           <div className="rounded-[2rem] border border-white/10 bg-[#0b1324] shadow-2xl overflow-hidden">
             <div className="grid md:grid-cols-2">
@@ -657,38 +626,6 @@ në pak sekonda.
                 <div className="w-full h-full rounded-3xl bg-[url('https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop')] bg-cover bg-center shadow-2xl" />
               </div>
             </div>
-          </div>
-        </section>
-
-        <section id="features" className="max-w-7xl mx-auto px-6 py-16">
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                title: "AI Receptionist 24/7",
-                text: "Përgjigjet në shqip, anglisht, italisht, gjermanisht dhe spanjisht.",
-              },
-              {
-                title: "Voice Assistant",
-                text: "Klienti mund të flasë me zë dhe AI përgjigjet me zë.",
-              },
-              {
-                title: "WhatsApp + Email",
-                text: "Konfirmime automatike për klientin dhe pronarin.",
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="bg-white/5 border border-white/10 rounded-3xl p-7 hover:border-yellow-400/40 transition"
-              >
-                <div className="h-12 w-12 rounded-2xl bg-yellow-400/10 text-yellow-400 flex items-center justify-center mb-5">
-                  ✦
-                </div>
-
-                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-
-                <p className="text-slate-400 leading-relaxed">{item.text}</p>
-              </div>
-            ))}
           </div>
         </section>
 
@@ -1006,30 +943,32 @@ në pak sekonda.
             </div>
           </div>
         </section>
-
-        <section id="contact" className="max-w-7xl mx-auto px-6 py-20">
-          <div className="bg-yellow-400 rounded-[2rem] p-10 md:p-14 text-slate-950 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div>
-              <h2 className="text-4xl font-black mb-3">
-                Gati ta automatizosh pronën tënde?
-              </h2>
-
-              <p className="text-lg">
-                BookingAI mund të përshtatet për çdo hotel, Airbnb ose
-                apartament.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setChatOpen(true)}
-              className="bg-slate-950 text-white rounded-2xl px-8 py-4 font-bold hover:bg-slate-800 transition"
-            >
-              Fol me AI →
-            </button>
-          </div>
-        </section>
       </main>
+<div className="fixed bottom-0 left-0 right-0 md:hidden bg-[#050914]/95 backdrop-blur border-t border-white/10 z-50">
+  <div className="grid grid-cols-4 text-center py-3">
+    <a href="#" className="text-white text-sm font-semibold">
+      Kreu
+    </a>
 
+    <a href="#features" className="text-white text-sm font-semibold">
+      Features
+    </a>
+
+    <button
+      onClick={() => setChatOpen(true)}
+      className="text-white text-sm font-semibold"
+    >
+      Chat
+    </button>
+
+    <button
+      onClick={scrollToDemo}
+      className="text-yellow-400 text-sm font-bold"
+    >
+      Rezervo
+    </button>
+  </div>
+</div>
       <ChatWidget
         chatOpen={chatOpen}
         setChatOpen={setChatOpen}
