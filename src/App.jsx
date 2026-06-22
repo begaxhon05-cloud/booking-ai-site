@@ -534,15 +534,15 @@ Total: €${total}`,
 </header>
 
 <main>
-  <section className="max-w-7xl mx-auto px-4 pt-7 pb-10 md:px-6 md:py-20">
-    <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 md:p-10 shadow-2xl">
-      <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+  <section className="max-w-7xl mx-auto px-4 pt-6 pb-8 md:px-6 md:py-20">
+    <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 md:p-10 shadow-2xl max-w-[420px] mx-auto md:max-w-none">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
         <div>
           <p className="text-yellow-400 text-sm md:text-base tracking-widest font-black mb-5">
             HOTEL AI BOOKING PLATFORM
           </p>
 
-          <h1 className="text-[46px] sm:text-6xl md:text-7xl font-black leading-[0.95] mb-6">
+          <h1 className="text-[42px] sm:text-6xl md:text-7xl font-black leading-[0.96] mb-6">
             Rezervo qëndrimin tënd{" "}
             <span className="text-yellow-400">në pak sekonda.</span>
           </h1>
@@ -573,7 +573,7 @@ Total: €${total}`,
           <img
             src="/hotel-hero.png"
             alt="Luxury hotel"
-            className="w-full h-[430px] md:h-[520px] object-cover"
+            className="w-full h-[360px] sm:h-[430px] md:h-[520px] object-cover"
           />
         </div>
       </div>
@@ -855,7 +855,7 @@ Total: €${total}`,
                     <button
                       type="submit"
                       disabled={loading}
-                      className="bg-yellow-400 hover:bg-yellow-500 disabled:bg-yellow-200 text-slate-950 font-semibold py-3 rounded-2xl transition"
+                      className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-4 py-3 md:px-8 md:py-4 text-sm md:text-lg shadow-lg shadow-yellow-400/20"
                     >
                       {loading ? "Sending..." : "Confirm"}
                     </button>
