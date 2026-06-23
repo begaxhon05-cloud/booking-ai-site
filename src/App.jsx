@@ -491,10 +491,9 @@ Total: €${total}`,
           ✓
         </div>
 
-        <h1 className="text-[34px] sm:text-5xl md:text-7xl font-black leading-[1.02] mb-4">
-  Book your stay{" "}
-  <span className="text-yellow-400">in seconds.</span>
-</h1>
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black leading-tight mb-6">
+          Booking confirmed
+        </h1>
 
         <p className="text-base sm:text-lg md:text-xl text-slate-300 leading-relaxed mb-8 max-w-2xl">
           Your booking request was sent successfully.
@@ -522,7 +521,7 @@ Total: €${total}`,
       onClick={scrollToDemo}
       className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-6 py-4 text-lg shadow-lg shadow-yellow-400/20"
     >
-      Book Now →
+      Rezervo tani →
     </button>
 
     <button
@@ -536,7 +535,7 @@ Total: €${total}`,
 
 <main>
   <section className="max-w-7xl mx-auto px-4 pt-6 pb-8 md:px-6 md:py-20">
-    <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-4 md:p-10 shadow-2xl max-w-[420px] mx-auto md:max-w-none">
+    <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 md:p-10 shadow-2xl max-w-[420px] mx-auto md:max-w-none">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
         <div>
           <p className="text-yellow-400 text-sm md:text-base tracking-widest font-black mb-5">
@@ -548,23 +547,24 @@ Total: €${total}`,
             <span className="text-yellow-400">në pak sekonda.</span>
           </h1>
 
-          <p className="text-[16px] md:text-xl text-slate-300 leading-relaxed mb-5 max-w-xl">
-  Choose your room, check availability and confirm your reservation with AI receptionist 24/7.
-</p>
+          <p className="text-[18px] md:text-xl text-slate-300 leading-relaxed mb-7 max-w-xl">
+            Zgjidh dhomën, kontrollo disponueshmërinë dhe konfirmo
+            rezervimin me ndihmën e AI receptionist 24/7.
+          </p>
 
           <div className="flex flex-col sm:flex-row gap-3 mb-7">
             <button
               onClick={scrollToDemo}
               className="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-8 py-4 text-lg shadow-lg shadow-yellow-400/20"
             >
-              Book Now →
+              Rezervo tani →
             </button>
 
             <button
               onClick={() => setChatOpen(true)}
-              className="w-full h-[285px] sm:h-[380px] md:h-[520px] object-cover"
+              className="w-full sm:w-auto border border-yellow-400/60 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl px-8 py-4 text-lg"
             >
-              💬 Chat with AI Assistant
+              💬 Fol me AI Assistant
             </button>
           </div>
         </div>
@@ -855,7 +855,7 @@ Total: €${total}`,
                     <button
                       type="submit"
                       disabled={loading}
-                      className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-5 py-3 md:px-8 md:py-4 text-sm md:text-lg shadow-lg shadow-yellow-400/20"
+                      className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-4 py-3 md:px-8 md:py-4 text-sm md:text-lg shadow-lg shadow-yellow-400/20"
                     >
                       {loading ? "Sending..." : "Confirm"}
                     </button>
@@ -894,9 +894,9 @@ Total: €${total}`,
       </div>
     </div>
     <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#050914]/95 backdrop-blur border-t border-white/10 px-4 py-3">
-  <div className="grid grid-cols-4 gap-2 text-center items-center">
+  <div className="grid grid-cols-4 gap-2 text-center">
     <a href="#" className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-bold">
-      🏠<br />Home
+      🏠<br />Kreu
     </a>
 
     <a href="#features" className="text-white py-3 font-semibold">
@@ -907,14 +907,14 @@ Total: €${total}`,
       onClick={() => setChatOpen(true)}
       className="text-white py-3 font-semibold"
     >
-      ☎<br />Contact
+      ☎<br />Kontakt
     </button>
 
     <button
       onClick={scrollToDemo}
       className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-black"
     >
-      Book Now
+      Rezervo →
     </button>
   </div>
 </div>
@@ -960,9 +960,9 @@ function ChatWidget({
   setVoiceEnabled,
 }) {
   return (
-    <div className="fixed bottom-28 right-5 md:bottom-5 md:right-5 z-50">
+    <div className="fixed bottom-5 right-5 z-50">
       {chatOpen && (
-        <div className="mb-4 w-[calc(100vw-32px)] md:w-[370px] rounded-3xl bg-white text-slate-900 shadow-2xl border border-slate-200 overflow-hidden">
+        <div className="mb-4 w-[370px] rounded-3xl bg-white text-slate-900 shadow-2xl border border-slate-200 overflow-hidden">
           <div className="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
             <div>
               <h3 className="font-bold">AI Assistant</h3>
