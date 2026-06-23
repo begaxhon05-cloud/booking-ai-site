@@ -521,7 +521,7 @@ Total: €${total}`,
       onClick={scrollToDemo}
       className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-6 py-4 text-lg shadow-lg shadow-yellow-400/20"
     >
-      Rezervo tani →
+      Book Now →
     </button>
 
     <button
@@ -535,46 +535,45 @@ Total: €${total}`,
 
 <main>
   <section className="max-w-7xl mx-auto px-4 pt-6 pb-8 md:px-6 md:py-20">
-    <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 md:p-10 shadow-2xl max-w-[420px] mx-auto md:max-w-none">
+    <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-4 md:p-10 shadow-2xl max-w-[420px] mx-auto md:max-w-none">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
         <div>
           <p className="text-yellow-400 text-sm md:text-base tracking-widest font-black mb-5">
             HOTEL AI BOOKING PLATFORM
           </p>
 
-          <h1 className="text-[42px] sm:text-6xl md:text-7xl font-black leading-[0.96] mb-6">
-            Rezervo qëndrimin tënd{" "}
-            <span className="text-yellow-400">në pak sekonda.</span>
-          </h1>
+          <h1 className="text-[34px] sm:text-5xl md:text-7xl font-black leading-[1.02] mb-4">
+  Book your stay{" "}
+  <span className="text-yellow-400">in seconds.</span>
+</h1>
 
-          <p className="text-[18px] md:text-xl text-slate-300 leading-relaxed mb-7 max-w-xl">
-            Zgjidh dhomën, kontrollo disponueshmërinë dhe konfirmo
-            rezervimin me ndihmën e AI receptionist 24/7.
-          </p>
+          <p className="text-[16px] md:text-xl text-slate-300 leading-relaxed mb-5 max-w-xl">
+  Choose your room, check availability and confirm your reservation with AI receptionist 24/7.
+</p>
 
           <div className="flex flex-col sm:flex-row gap-3 mb-7">
             <button
               onClick={scrollToDemo}
               className="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-8 py-4 text-lg shadow-lg shadow-yellow-400/20"
             >
-              Rezervo tani →
+              Book Now →
             </button>
 
             <button
               onClick={() => setChatOpen(true)}
               className="w-full sm:w-auto border border-yellow-400/60 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl px-8 py-4 text-lg"
             >
-              💬 Fol me AI Assistant
+              💬 Chat with AI Assistant
             </button>
           </div>
         </div>
 
         <div className="rounded-[1.7rem] overflow-hidden border border-white/10 shadow-2xl">
           <img
-            src="/hotel-hero.png"
-            alt="Luxury hotel"
-            className="w-full h-[360px] sm:h-[430px] md:h-[520px] object-cover"
-          />
+  src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop"
+  alt="Luxury hotel"
+  className="w-full h-[285px] sm:h-[380px] md:h-[520px] object-cover"
+/>
         </div>
       </div>
     </div>
@@ -614,14 +613,14 @@ Total: €${total}`,
       <section id="demo" className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-16">
         <div className="grid lg:grid-cols-2 gap-8 md:gap-10 items-start">
           <div>
-            <p className="text-yellow-400 font-bold mb-3">REZERVO ONLINE</p>
+            <p className="text-yellow-400 font-bold mb-3">BOOK ONLINE</p>
 
             <h2 className="text-4xl md:text-5xl font-black mb-6">
-              Provoje sistemin real tani.
+              Try the real booking system.
             </h2>
 
             <p className="text-slate-300 text-lg leading-relaxed mb-6">
-              Plotëso formën e rezervimit ose fol direkt me AI Assistant.
+              Complete the booking form or chat directly with AI Assistant.
             </p>
           </div>
 
@@ -855,7 +854,7 @@ Total: €${total}`,
                     <button
                       type="submit"
                       disabled={loading}
-                      className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-4 py-3 md:px-8 md:py-4 text-sm md:text-lg shadow-lg shadow-yellow-400/20"
+                      className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-5 py-3 md:px-8 md:py-4 text-sm md:text-lg shadow-lg shadow-yellow-400/20"
                     >
                       {loading ? "Sending..." : "Confirm"}
                     </button>
@@ -896,7 +895,7 @@ Total: €${total}`,
     <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#050914]/95 backdrop-blur border-t border-white/10 px-4 py-3">
   <div className="grid grid-cols-4 gap-2 text-center">
     <a href="#" className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-bold">
-      🏠<br />Kreu
+      🏠<br />Home
     </a>
 
     <a href="#features" className="text-white py-3 font-semibold">
@@ -907,7 +906,7 @@ Total: €${total}`,
       onClick={() => setChatOpen(true)}
       className="text-white py-3 font-semibold"
     >
-      ☎<br />Kontakt
+      ☎<br />Contact
     </button>
 
     <button
@@ -960,9 +959,9 @@ function ChatWidget({
   setVoiceEnabled,
 }) {
   return (
-    <div className="fixed bottom-5 right-5 z-50">
+    <div className="fixed bottom-28 right-5 md:bottom-5 md:right-5 z-50">
       {chatOpen && (
-        <div className="mb-4 w-[370px] rounded-3xl bg-white text-slate-900 shadow-2xl border border-slate-200 overflow-hidden">
+        <div className="mb-4 w-[calc(100vw-32px)] md:w-[370px] rounded-3xl bg-white text-slate-900 shadow-2xl border border-slate-200 overflow-hidden">
           <div className="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
             <div>
               <h3 className="font-bold">AI Assistant</h3>
