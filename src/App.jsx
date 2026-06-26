@@ -580,35 +580,43 @@ Total: €${total}`,
   </section>
 
       <section id="features" className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-16">
-        <div className="grid md:grid-cols-3 gap-5">
-          {[
-            {
-              title: "AI Receptionist 24/7",
-              text: "Need assistance?   Get instant answers about rooms, prices, availability, bookings, check-in times, and hotel services-anytime, day or night",
-            },
-            {
-              title: "Voice Assistant",
-              text: "Ask questions naturally and get instant spoken answers from AI assistant",
-            },
-            {
-              title: "WhatsApp + Email",
-              text: "Send booking confirmations, reminders, and updates automatically via WhatsApp and email",
-            },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="bg-white/5 border border-white/10 rounded-3xl p-6 hover:border-yellow-400/40 transition"
-            >
-              <div className="h-12 w-12 rounded-2xl bg-yellow-400/10 text-yellow-400 flex items-center justify-center mb-5">
-                ✦
-              </div>
+  <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 md:p-8 shadow-2xl">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {[
+        {
+          icon: "★",
+          title: "AI Receptionist 24/7",
+          text: "Answers questions about rooms, prices, dates and reservations.",
+        },
+        {
+          icon: "≋",
+          title: "Voice Assistant",
+          text: "Guests can speak naturally and AI responds with voice.",
+        },
+        {
+          icon: "☏",
+          title: "WhatsApp & Email",
+          text: "Automatic confirmations for guests and hotel owners.",
+        },
+      ].map((item) => (
+        <div
+          key={item.title}
+          className="bg-[#070d1a] border border-white/10 rounded-3xl p-5 hover:border-yellow-400/40 transition"
+        >
+          <div className="h-14 w-14 rounded-2xl bg-yellow-400/10 border border-yellow-400/40 text-yellow-400 flex items-center justify-center mb-5 text-2xl font-black">
+            {item.icon}
+          </div>
 
-              <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-              <p className="text-slate-400 leading-relaxed">{item.text}</p>
-            </div>
-          ))}
+          <h3 className="text-xl font-black mb-3">{item.title}</h3>
+
+          <p className="text-slate-400 leading-relaxed text-[15px]">
+            {item.text}
+          </p>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
 
       <section id="demo" className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-16">
         <div className="grid lg:grid-cols-2 gap-8 md:gap-10 items-start">
