@@ -584,15 +584,15 @@ Total: €${total}`,
           {[
             {
               title: "AI Receptionist 24/7",
-              text: "Përgjigjet për dhomat, çmimet, datat dhe rezervimet.",
+              text: "Need assistance?   Get instant answers about rooms, prices, availability, bookings, check-in times, and hotel services-anytime, day or night",
             },
             {
               title: "Voice Assistant",
-              text: "Klienti mund të flasë me zë dhe AI përgjigjet me zë.",
+              text: "Ask questions naturally and get instant spoken answers from AI assistant",
             },
             {
               title: "WhatsApp + Email",
-              text: "Konfirmime automatike për klientin dhe pronarin.",
+              text: "Send booking confirmations, reminders, and updates automatically via WhatsApp and email",
             },
           ].map((item) => (
             <div
