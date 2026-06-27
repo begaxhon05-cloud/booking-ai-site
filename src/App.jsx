@@ -538,41 +538,42 @@ Total: €${total}`,
     <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-4 md:p-10 shadow-2xl max-w-[420px] mx-auto md:max-w-none">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
         <div>
-          <p className="text-yellow-400 text-sm md:text-base tracking-widest font-black mb-5">
-            HOTEL AI BOOKING PLATFORM
-          </p>
-
-          <h1 className="text-[34px] sm:text-5xl md:text-7xl font-black leading-[1.02] mb-4">
-  Book your stay{" "}
-  <span className="text-yellow-400">in seconds.</span>
-</h1>
-
-          <p className="text-[16px] md:text-xl text-slate-300 leading-relaxed mb-5 max-w-xl">
-  Choose your room, check availability and confirm your reservation with AI receptionist 24/7.
+          <p className="text-yellow-400 text-[12px] md:text-base tracking-[0.18em] font-black mb-4">
+  HOTEL AI BOOKING PLATFORM
 </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 mb-7">
-            <button
-              onClick={scrollToDemo}
-              className="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-8 py-4 text-lg shadow-lg shadow-yellow-400/20"
-            >
-              Book Now →
-            </button>
+<h1 className="text-[36px] sm:text-5xl md:text-7xl font-black leading-[1.02] mb-4">
+  Book your stay.
+  <br />
+  <span className="text-yellow-400">AI does the rest.</span>
+</h1>
 
-            <button
-              onClick={() => setChatOpen(true)}
-              className="w-full sm:w-auto border border-yellow-400/60 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl px-8 py-4 text-lg"
-            >
-              💬 Chat with AI Assistant
-            </button>
-          </div>
+<p className="text-[16px] md:text-xl text-slate-300 leading-relaxed mb-5 max-w-xl">
+  Choose your room, check availability and confirm your reservation with an AI receptionist available 24/7.
+</p>
+
+<div className="flex flex-col sm:flex-row gap-3 mb-5">
+  <button
+    onClick={scrollToDemo}
+    className="w-full sm:w-auto bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-[18px] px-8 h-14 text-base shadow-lg shadow-yellow-400/20"
+  >
+    Book Now →
+  </button>
+
+  <button
+    onClick={() => setChatOpen(true)}
+    className="w-full sm:w-auto border border-yellow-400/60 bg-white/5 hover:bg-white/10 text-white font-bold rounded-[18px] px-8 h-14 text-base"
+  >
+    💬 Chat with AI
+  </button>
+</div>
         </div>
 
         <div className="rounded-[1.7rem] overflow-hidden border border-white/10 shadow-2xl">
           <img
   src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop"
   alt="Luxury hotel"
-  className="w-full h-[285px] sm:h-[380px] md:h-[520px] object-cover"
+  className="w-full h-[260px] sm:h-[360px] md:h-[520px] object-cover"
 />
         </div>
       </div>
