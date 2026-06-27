@@ -542,13 +542,13 @@ Total: €${total}`,
   HOTEL AI BOOKING PLATFORM
 </p>
 
-<h1 className="text-[36px] sm:text-5xl md:text-7xl font-black leading-[1.02] mb-4">
+<h1 className="text-[28px] leading-[1.05] sm:text-[36px] md:text-7xl font-black mb-4">
   Book your stay.
   <br />
   <span className="text-yellow-400">AI does the rest.</span>
 </h1>
 
-<p className="text-[16px] md:text-xl text-slate-300 leading-relaxed mb-5 max-w-xl">
+<p className="text-[15px] md:text-xl text-slate-300 leading-8 mb-5 max-w-xl">
   Choose your room, check availability and confirm your reservation with an AI receptionist available 24/7.
 </p>
 
@@ -571,9 +571,9 @@ Total: €${total}`,
 
         <div className="rounded-[1.7rem] overflow-hidden border border-white/10 shadow-2xl">
           <img
-  src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop"
+  src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80"
   alt="Luxury hotel"
-  className="w-full h-[260px] sm:h-[360px] md:h-[520px] object-cover"
+  className="w-full h-[220px] rounded-[24px] object-cover mt-4"
 />
         </div>
       </div>
@@ -581,7 +581,7 @@ Total: €${total}`,
   </section>
 
       <section id="features" className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-16">
-  <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 md:p-8 shadow-2xl">
+  <div className="rounded-[2rem] border border-white/10 bg-[#121722] p-6 md:p-12">
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
       {[
         {
