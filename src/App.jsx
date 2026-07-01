@@ -5,6 +5,8 @@ import AdminDashboard from "./AdminDashboard";
 import AdminLogin from "./AdminLogin";
 import "./App.css";
 import HeroSection from "./components/HeroSection";
+import FeaturesSection from "./components/FeaturesSection";
+import MobileBottomNav from "./components/MobileBottomNav";
 
 export default function App() {
   const pathParts = window.location.pathname.split("/").filter(Boolean);
@@ -533,47 +535,8 @@ Total: €${total}`,
     </button>
   </div>
 </header>
-
+<FeaturesSection />
 <main>
-<section id="features" className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-16">
-  <div className="rounded-[2rem] border border-white/10 bg-[#121722] p-6 md:p-12">
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-      {[
-        {
-          icon: "★",
-          title: "AI Receptionist 24/7",
-          text: "Answers questions about rooms, prices, dates and reservations.",
-        },
-        {
-          icon: "≋",
-          title: "Voice Assistant",
-          text: "Guests can speak naturally and AI responds with voice.",
-        },
-        {
-          icon: "☏",
-          title: "WhatsApp & Email",
-          text: "Automatic confirmations for guests and hotel owners.",
-        },
-      ].map((item) => (
-        <div
-          key={item.title}
-          className="bg-[#070d1a] border border-white/10 rounded-3xl p-5 hover:border-yellow-400/40 transition"
-        >
-          <div className="h-14 w-14 rounded-2xl bg-yellow-400/10 border border-yellow-400/40 text-yellow-400 flex items-center justify-center mb-5 text-2xl font-black">
-            {item.icon}
-          </div>
-
-          <h3 className="text-xl font-black mb-3">{item.title}</h3>
-
-          <p className="text-slate-400 leading-relaxed text-[15px]">
-            {item.text}
-          </p>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
       <section id="demo" className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-16">
         <div className="grid lg:grid-cols-2 gap-8 md:gap-10 items-start">
           <div>
@@ -831,56 +794,10 @@ Total: €${total}`,
       </section>
     </main>
 
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#050914]/95 backdrop-blur border-t border-white/10 px-4 py-3">
-      <div className="grid grid-cols-4 gap-2 items-center text-center">
-        <a href="#" className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-bold">
-          Kreu
-        </a>
-
-        <a href="#features" className="text-white py-3 font-semibold">
-          Features
-        </a>
-
-        <button
-          onClick={() => setChatOpen(true)}
-          className="text-white py-3 font-semibold"
-        >
-          Chat
-        </button>
-
-        <button
-          onClick={scrollToDemo}
-          className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-black"
-        >
-          Rezervo
-        </button>
-      </div>
-    </div>
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#050914]/95 backdrop-blur border-t border-white/10 px-4 py-3">
-  <div className="grid grid-cols-4 gap-2 text-center">
-    <a href="#" className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-bold">
-      🏠<br />Home
-    </a>
-
-    <a href="#features" className="text-white py-3 font-semibold">
-      ▦<br />Features
-    </a>
-
-    <button
-      onClick={() => setChatOpen(true)}
-      className="text-white py-3 font-semibold"
-    >
-      ☎<br />Contact
-    </button>
-
-    <button
-      onClick={scrollToDemo}
-      className="bg-yellow-400 text-slate-950 rounded-2xl py-3 font-black"
-    >
-      Rezervo →
-    </button>
-  </div>
-</div>
+    <MobileBottomNav
+  scrollToDemo={scrollToDemo}
+  setChatOpen={setChatOpen}
+/>
       <ChatWidget
         chatOpen={chatOpen}
         setChatOpen={setChatOpen}
