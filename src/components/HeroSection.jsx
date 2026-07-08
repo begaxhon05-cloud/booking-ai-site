@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function HeroSection({
-  scrollToDemo,
+  scrollToContact,
   setChatOpen,
 }) {
   return (
@@ -37,20 +37,20 @@ export default function HeroSection({
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-5">
-              <button
-                onClick={scrollToDemo}
-                className="w-full sm:w-auto h-14 px-8 rounded-2xl bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black transition"
-              >
-                Get Demo →
-              </button>
+  <button
+    onClick={scrollToContact}
+    className="w-full sm:w-auto h-14 px-8 rounded-2xl bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black transition"
+  >
+    Add AI to My Hotel Website →
+  </button>
 
-              <button
-                onClick={() => setChatOpen(true)}
-                className="w-full sm:w-auto h-14 px-8 rounded-2xl border border-white/15 bg-white/5 hover:bg-white/10 text-white font-bold transition"
-              >
-                💬 Try AI Receptionist
-              </button>
-            </div>
+  <button
+    onClick={() => setChatOpen(true)}
+    className="w-full sm:w-auto h-14 px-8 rounded-2xl border border-white/15 bg-white/5 hover:bg-white/10 text-white font-bold transition"
+  >
+    💬 Talk to AI Receptionist
+  </button>
+</div>
 
             <p className="text-sm text-slate-400">
               Works with your existing hotel website.
