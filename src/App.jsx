@@ -483,9 +483,9 @@ Total: €${total}`,
     });
   };
 
-  const scrollToDemo = () => {
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollToContact = () => {
+  document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+};
 
   if (sent) {
   return (
