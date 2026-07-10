@@ -516,27 +516,58 @@ Total: €${total}`,
    
       return (
   <div className="min-h-screen bg-[#050914] text-white overflow-x-hidden pb-28 md:pb-0">
-    <header className="sticky top-0 z-40 bg-[#050914]/95 backdrop-blur border-b border-white/10 rounded-b-[2rem]">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 flex items-center justify-between">
-        <div className="text-2xl md:text-3xl font-black">
+    <header className="sticky top-0 z-40 bg-[#050914]/90 backdrop-blur-xl border-b border-white/10">
+  <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
+    <div className="flex items-center gap-3">
+      <div className="h-10 w-10 rounded-2xl bg-yellow-400 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-yellow-400/20">
+        GP
+      </div>
+
+      <div className="leading-none">
+        <div className="text-xl md:text-2xl font-black tracking-tight">
           GuestPilot<span className="text-yellow-400">AI</span>
         </div>
-
-        <button
-          onClick={scrollToContact}
-          className="hidden md:inline-flex bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-6 py-4 text-base shadow-lg shadow-yellow-400/20 transition"
-        >
-          Add AI to My Website →
-        </button>
-
-        <button
-          onClick={() => setChatOpen(true)}
-          className="md:hidden text-white text-3xl leading-none"
-        >
-          💬
-        </button>
+        <p className="hidden sm:block text-xs text-slate-400 mt-1">
+          AI Receptionist for hotels
+        </p>
       </div>
-    </header>
+    </div>
+
+    <div className="hidden md:flex items-center gap-8">
+      <button
+        onClick={() =>
+          document.getElementById("features")?.scrollIntoView({
+            behavior: "smooth",
+          })
+        }
+        className="text-sm font-semibold text-slate-300 hover:text-white transition"
+      >
+        Features
+      </button>
+
+      <button
+        onClick={scrollToContact}
+        className="text-sm font-semibold text-slate-300 hover:text-white transition"
+      >
+        Install
+      </button>
+
+      <button
+        onClick={scrollToContact}
+        className="h-12 px-6 rounded-2xl bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black shadow-lg shadow-yellow-400/20 transition"
+      >
+        Add AI to My Website →
+      </button>
+    </div>
+
+    <button
+      onClick={() => setChatOpen(true)}
+      className="md:hidden h-11 w-11 rounded-2xl border border-white/10 bg-white/5 text-white flex items-center justify-center text-xl"
+    >
+      💬
+    </button>
+  </div>
+</header>
 
     <main>
       <HeroSection
