@@ -7,6 +7,7 @@ import "./App.css";
 import HeroSection from "./components/HeroSection";
 import FeaturesSection from "./components/FeaturesSection";
 import MobileBottomNav from "./components/MobileBottomNav";
+import BookingSection from "./components/BookingSection";
 
 export default function App() {
   const pathParts = window.location.pathname.split("/").filter(Boolean);
@@ -56,7 +57,7 @@ function MainWebsite() {
   const hotelSlug =
   window.location.pathname.split("/").filter(Boolean)[0] || "villa-aurora-demo";
 
-  const [chatOpen, setChatOpen] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
       from: "bot",
@@ -483,7 +484,7 @@ Total: €${total}`,
   };
 
   const scrollToDemo = () => {
-    document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
   if (sent) {
@@ -512,312 +513,68 @@ Total: €${total}`,
     </div>
   );
 }
-   return (
+   
+      return (
   <div className="min-h-screen bg-[#050914] text-white overflow-x-hidden pb-28 md:pb-0">
     <header className="sticky top-0 z-40 bg-[#050914]/95 backdrop-blur border-b border-white/10 rounded-b-[2rem]">
-  <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 flex items-center justify-between">
-    <div className="text-3xl font-black">
-      Booking<span className="text-yellow-400">AI</span>
-    </div>
-
-    <button
-      onClick={scrollToDemo}
-      className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-6 py-4 text-lg shadow-lg shadow-yellow-400/20"
-    >
-      Book Now →
-    </button>
-
-    <button
-      onClick={() => setChatOpen(true)}
-      className="md:hidden text-white text-4xl leading-none"
-    >
-      ☰
-    </button>
-  </div>
-</header>
-<FeaturesSection />
-<main>
-      <section id="demo" className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-16">
-        <div className="grid lg:grid-cols-2 gap-8 md:gap-10 items-start">
-          <div>
-            <p className="text-yellow-400 font-bold mb-3">BOOK ONLINE</p>
-
-            <h2 className="text-4xl md:text-5xl font-black mb-6">
-              Try the real booking system.
-            </h2>
-
-            <p className="text-slate-300 text-lg leading-relaxed mb-6">
-              Complete the booking form or chat directly with AI Assistant.
-            </p>
-          </div>
-
-          <div className="bg-white text-slate-900 rounded-3xl p-6 md:p-8 shadow-2xl">
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-2xl font-bold">Booking Request</h2>
-                <span className="text-sm font-semibold text-slate-500">
-                  Step {step}/4
-                </span>
-              </div>
-
-              <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-yellow-400 transition-all"
-                  style={{ width: `${(step / 4) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            <form onSubmit={onSubmit}>
-              {step === 1 && (
-                <div className="space-y-5">
-                  <div>
-                    <h3 className="text-xl font-bold mb-1">Select Dates</h3>
-                    <p className="text-slate-500 mb-5">
-                      Choose your room, check-in date and number of nights.
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold mb-2">
-                      Room
-                    </label>
-
-                    <select
-                      name="room"
-                      value={form.room}
-                      onChange={onChange}
-                      required
-                      className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                    >
-                      {rooms.map((room) => (
-                        <option key={room} value={room}>
-                          {room}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold mb-2">
-                      Check-in
-                    </label>
-
-                    <input
-                      type="date"
-                      name="checkin"
-                      value={form.checkin}
-                      onChange={onChange}
-                      min={new Date().toISOString().split("T")[0]}
-                      required
-                      className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                    />
-
-                    {form.checkin && isRoomBooked && (
-                      <p className="text-red-500 text-sm mt-2 font-semibold">
-                        This room is already booked for this date.
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold mb-2">
-                      Nights
-                    </label>
-
-                    <input
-                      type="number"
-                      name="nights"
-                      min="1"
-                      value={form.nights}
-                      onChange={onChange}
-                      required
-                      className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={next}
-                    disabled={!form.checkin || !form.nights}
-                    className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-semibold py-3 rounded-2xl transition"
-                  >
-                    Continue
-                  </button>
-                </div>
-              )}
-
-              {step === 2 && (
-                <div className="space-y-5">
-                  <h3 className="text-xl font-bold">Guests</h3>
-
-                  <input
-                    type="number"
-                    name="guests"
-                    min="1"
-                    value={form.guests}
-                    onChange={onChange}
-                    required
-                    className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                  />
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={back}
-                      className="border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
-                    >
-                      Back
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={next}
-                      className="bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-2xl transition"
-                    >
-                      Continue
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {step === 3 && (
-                <div className="space-y-5">
-                  <h3 className="text-xl font-bold">Your Info</h3>
-
-                  <input
-                    type="text"
-                    name="name"
-                    value={form.name}
-                    onChange={onChange}
-                    placeholder="Name"
-                    required
-                    className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                  />
-
-                  <input
-                    type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={onChange}
-                    placeholder="Email"
-                    required
-                    className="w-full border border-slate-300 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-yellow-400"
-                  />
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={back}
-                      className="border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
-                    >
-                      Back
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={next}
-                      disabled={!form.name || !form.email}
-                      className="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-semibold py-3 rounded-2xl transition"
-                    >
-                      Continue
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {step === 4 && (
-                <div className="space-y-5">
-                  <h3 className="text-xl font-bold">Confirm Booking</h3>
-
-                  <div className="bg-slate-100 rounded-2xl p-5 space-y-3">
-                    {[
-                      ["Name", form.name],
-                      ["Email", form.email],
-                      ["Room", form.room],
-                      ["Check-in", form.checkin],
-                      ["Nights", form.nights],
-                      ["Guests", form.guests],
-                    ].map(([label, value]) => (
-                      <div key={label} className="flex justify-between">
-                        <span className="text-slate-500">{label}</span>
-                        <span className="font-semibold">{value}</span>
-                      </div>
-                    ))}
-
-                    <div className="border-t border-slate-300 pt-3 mt-3">
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">
-                          €{pricePerNight} x {form.nights} nights
-                        </span>
-                        <span className="font-semibold">
-                          €{Number(form.nights) * pricePerNight}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between mt-2">
-                        <span className="text-slate-500">Service fee</span>
-                        <span className="font-semibold">€{serviceFee}</span>
-                      </div>
-
-                      <div className="flex justify-between mt-3 text-lg">
-                        <span className="font-bold">Total</span>
-                        <span className="font-bold text-green-600">
-                          €{totalPrice}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={back}
-                      className="border border-slate-300 hover:bg-slate-100 font-semibold py-3 rounded-2xl transition"
-                    >
-                      Back
-                    </button>
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-5 py-3 md:px-8 md:py-4 text-sm md:text-lg shadow-lg shadow-yellow-400/20"
-                    >
-                      {loading ? "Sending..." : "Confirm"}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </form>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 flex items-center justify-between">
+        <div className="text-2xl md:text-3xl font-black">
+          GuestPilot<span className="text-yellow-400">AI</span>
         </div>
-      </section>
+
+        <button
+          onClick={scrollToContact}
+          className="hidden md:inline-flex bg-yellow-400 hover:bg-yellow-500 text-slate-950 font-black rounded-2xl px-6 py-4 text-base shadow-lg shadow-yellow-400/20 transition"
+        >
+          Add AI to My Website →
+        </button>
+
+        <button
+          onClick={() => setChatOpen(true)}
+          className="md:hidden text-white text-3xl leading-none"
+        >
+          💬
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <HeroSection
+        scrollToDemo={scrollToContact}
+        setChatOpen={setChatOpen}
+      />
+
+      <FeaturesSection />
+
+      <BookingSection setChatOpen={setChatOpen} />
     </main>
 
     <MobileBottomNav
-  scrollToDemo={scrollToDemo}
-  setChatOpen={setChatOpen}
-/>
-      <ChatWidget
-        chatOpen={chatOpen}
-        setChatOpen={setChatOpen}
-        messages={messages}
-        pendingBooking={pendingBooking}
-        chatLoading={chatLoading}
-        question={question}
-        setQuestion={setQuestion}
-        sendMessage={sendMessage}
-        loading={loading}
-        submitBooking={submitBooking}
-        isUnavailable={isUnavailable}
-        calculateTotal={calculateTotal}
-        isListening={isListening}
-        startVoiceInput={startVoiceInput}
-        voiceEnabled={voiceEnabled}
-        setVoiceEnabled={setVoiceEnabled}
-      />
-    </div>
-  );
+      scrollToDemo={scrollToContact}
+      setChatOpen={setChatOpen}
+    />
+
+    <ChatWidget
+      hotel={hotel}
+      chatOpen={chatOpen}
+      setChatOpen={setChatOpen}
+      messages={messages}
+      pendingBooking={pendingBooking}
+      chatLoading={chatLoading}
+      question={question}
+      setQuestion={setQuestion}
+      sendMessage={sendMessage}
+      loading={loading}
+      submitBooking={submitBooking}
+      isUnavailable={isUnavailable}
+      calculateTotal={calculateTotal}
+      isListening={isListening}
+      startVoiceInput={startVoiceInput}
+      voiceEnabled={voiceEnabled}
+      setVoiceEnabled={setVoiceEnabled}
+    />
+  </div>
+);
 }
 
 function ChatWidget({
